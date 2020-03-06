@@ -1,14 +1,12 @@
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//  Created by Sam Deane on 06/03/20.
+//  All code (c) 2020 - present day, Elegant Chaos Limited.
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+#if os(iOS) || os(macOS)
 import Foundation
 
 public extension URL {
-    func appendingPathComponents(_ components: [String]) -> URL {
-        var url = self
-        for component in components {
-            url.appendPathComponent(component)
-        }
-        return url
-    }
-
     func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
         guard startAccessingSecurityScopedResource() else {
             return
@@ -44,3 +42,4 @@ public extension URL {
         return resolved
     }
 }
+#endif
