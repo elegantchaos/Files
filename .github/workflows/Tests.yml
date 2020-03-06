@@ -62,7 +62,7 @@ jobs:
     linux-52:
         name: Linux (Swift 5.2 Nightly)
         runs-on: ubuntu-latest
-        container: swift:nightly-5.2
+        container: swiftlang/swift:nightly-5.2
         steps:
         - name: Checkout
           uses: actions/checkout@v1
@@ -90,7 +90,7 @@ jobs:
     linux-n:
         name: Linux (Swift Nightly)
         runs-on: ubuntu-latest
-        container: swift:nightly
+        container: swiftlang/swift:nightly
         steps:
         - name: Checkout
           uses: actions/checkout@v1
