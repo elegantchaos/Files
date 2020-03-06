@@ -7,6 +7,7 @@ extension URLExtensionsTests {
     // to regenerate.
     static let __allTests__URLExtensionsTests = [
         ("testAppendingPathComponents", testAppendingPathComponents),
+        ("testAppendingPathComponents2", testAppendingPathComponents2),
     ]
 }
 
