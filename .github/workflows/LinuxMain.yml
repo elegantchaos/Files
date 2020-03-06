@@ -1,0 +1,22 @@
+name: LinuxMain
+
+on: [push]
+
+jobs:
+    update:
+        name: Update Linux Main
+        runs-on: macOS-latest
+        steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        - name: Update
+          run: swift test --generate-linuxmain
+        - name: Commit Changes
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m "Updated Linux Main" -a
+        - name: Push changes
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
