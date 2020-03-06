@@ -1,3 +1,3 @@
 # URLExtensions
 
-A description of this package.
+Miscellaneous extensions for Swift Foundation's `URL` class.
