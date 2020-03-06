@@ -19,28 +19,28 @@ public extension URL {
         let targetURL = appendingPathComponents(components)
         block(targetURL)
     }
+    
+    /// Returns bookmark data for a security scoped URL.
+    /// - Parameter options: bookmark creation options
+    /// - Returns: The bookmark data, or nil if something goes wrong.
+    func secureBookmark(options:  URL.BookmarkCreationOptions = .minimalBookmark) -> Data? {
+        guard startAccessingSecurityScopedResource() else {
+            return nil
+        }
+            
+        defer { stopAccessingSecurityScopedResource() }
+        return try? bookmarkData(options: options, includingResourceValuesForKeys: nil, relativeTo: nil)
+    }
+    
+    /// Take some data returned from `secureBookmark`, and turn it back into a URL
+    /// - Parameter data: The bookmark data.
+    /// - Returns: The URL, or nil if something goes wrong or the data was stale.
+    static func resolveSecureBookmark(_ data: Data) -> URL? {
+        var isStale = false
+        guard let resolved = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale), !isStale else {
+            return nil
+        }
 
-    //    func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
-    //        var stopList: [URL] = []
-    //        var remaining = components
-    //        var url = self
-    //        while !remaining.isEmpty, let component = remaining.first {
-    //            if !url.startAccessingSecurityScopedResource() {
-    //                break
-    //            }
-    //
-    //            stopList.insert(url, at: 0)
-    //            url = url.appendingPathComponent(component)
-    //            remaining.removeFirst()
-    //        }
-    //
-    //        if remaining.isEmpty {
-    //            block(url)
-    //        }
-    //
-    //        for url in stopList {
-    //            url.stopAccessingSecurityScopedResource()
-    //        }
-    //    }
-
+        return resolved
+    }
 }
