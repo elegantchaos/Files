@@ -115,8 +115,8 @@ jobs:
             mention_if: 'failure'
             url: ${{ secrets.SLACK_WEBHOOK }}
 
-    macOS-iOS-tvOS-watchOS:
-        name: macOS/iOS/tvOS/watchOS
+    macOS-iOS-tvOS:
+        name: macOS/iOS/tvOS
         runs-on: macOS-latest
         steps:
         - name: Checkout
@@ -201,22 +201,12 @@ jobs:
             set -o pipefail
             source "names-tvOS.sh"
             xcodebuild test -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "name=Apple TV" -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ENABLE_TESTABILITY=YES | tee logs/xcodebuild-tvOS-test-release.log | xcpretty
-        - name: Build (watchOS/Debug)
-          run: |
-            set -o pipefail
-            source "names-watchOS.sh"
-            xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | tee logs/xcodebuild-watchOS-build-debug.log | xcpretty
-        - name: Build (watchOS/Release)
-          run: |
-            set -o pipefail
-            source "names-watchOS.sh"
-            xcodebuild clean build -workspace "$WORKSPACE" -scheme "$SCHEME" -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | tee logs/xcodebuild-watchOS-build-release.log | xcpretty
         - name: Slack Notification
           uses: elegantchaos/slatify@master
           if: always()
           with:
             type: ${{ job.status }}
-            job_name: 'macOS/iOS/tvOS/watchOS'
+            job_name: 'macOS/iOS/tvOS'
             mention_if: 'failure'
             url: ${{ secrets.SLACK_WEBHOOK }}
 
