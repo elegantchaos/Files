@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension FileManager {
+public extension FileManager {
     func fileExists(atURL url: URL) -> Bool {
         return fileExists(atPath: url.path)
     }
