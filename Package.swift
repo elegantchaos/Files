@@ -3,20 +3,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "URLExtensions",
+    name: "Files",
     products: [
         .library(
-            name: "URLExtensions",
-            targets: ["URLExtensions"]),
+            name: "Files",
+            targets: ["Files"]),
     ],
     dependencies: [
     ],
     targets: [
         .target(
-            name: "URLExtensions",
+            name: "Files",
             dependencies: []),
         .testTarget(
-            name: "URLExtensionsTests",
-            dependencies: ["URLExtensions"]),
+            name: "FilesTests",
+            dependencies: ["Files"]),
     ]
 )

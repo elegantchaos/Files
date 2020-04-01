@@ -1,7 +1,7 @@
 import XCTest
-@testable import URLExtensions
+@testable import Files
 
-final class URLExtensionsTests: XCTestCase {
+final class URLTests: XCTestCase {
     func testAppendingPathComponents() {
         let url = URL(fileURLWithPath: "/")
         

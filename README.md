@@ -1,3 +1,3 @@
-# URLExtensions
+# Files
 
-Miscellaneous extensions for Swift Foundation's `URL` class.
+Miscellaneous Swift File and URL extensions.
