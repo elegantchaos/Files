@@ -5,15 +5,14 @@
 
 import Foundation
 
+#if os(iOS) || os(macOS)
 public extension URL {
     func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
-        #if os(iOS) || os(macOS)
         guard startAccessingSecurityScopedResource() else {
             return
         }
 
         defer { stopAccessingSecurityScopedResource() }
-        #endif
         
         let targetURL = appendingPathComponents(components)
         block(targetURL)
@@ -23,13 +22,11 @@ public extension URL {
     /// - Parameter options: bookmark creation options
     /// - Returns: The bookmark data, or nil if something goes wrong.
     func secureBookmark(options:  URL.BookmarkCreationOptions = .minimalBookmark) -> Data? {
-        #if os(iOS) || os(macOS)
         guard startAccessingSecurityScopedResource() else {
             return nil
         }
             
         defer { stopAccessingSecurityScopedResource() }
-        #endif
         
         return try? bookmarkData(options: options, includingResourceValuesForKeys: nil, relativeTo: nil)
     }
@@ -46,3 +43,4 @@ public extension URL {
         return resolved
     }
 }
+#endif
