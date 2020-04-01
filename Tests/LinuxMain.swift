@@ -1,8 +1,8 @@
 import XCTest
 
-import URLExtensionsTests
+import FilesTests
 
 var tests = [XCTestCaseEntry]()
-tests += URLExtensionsTests.__allTests()
+tests += FilesTests.__allTests()
 
 XCTMain(tests)
