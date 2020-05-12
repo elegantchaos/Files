@@ -5,8 +5,8 @@
 
 import Foundation
 
-#if os(iOS) || os(macOS)
 public extension URL {
+    #if os(iOS) || os(macOS)
     func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
         guard startAccessingSecurityScopedResource() else {
             return
@@ -42,5 +42,10 @@ public extension URL {
 
         return resolved
     }
+    #else
+    func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
+        let targetURL = appendingPathComponents(components)
+        block(targetURL)
+    }
+    #endif
 }
-#endif
