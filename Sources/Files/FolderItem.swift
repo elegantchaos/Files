@@ -10,6 +10,8 @@ public protocol FolderItem {
     var path: String { get }
     var isFile: Bool { get }
     var isHidden: Bool { get }
+    var name: String { get }
+    var pathExtension: String { get }
 }
 
 public extension FolderItem {
@@ -21,4 +23,13 @@ public extension FolderItem {
     var path: String {
         ref.url.path
     }
+    
+    var name: String {
+        ref.url.deletingPathExtension().lastPathComponent
+    }
+
+    var pathExtension: String {
+        ref.url.pathExtension
+    }
+
 }
