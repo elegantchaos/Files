@@ -38,4 +38,8 @@ public struct FolderManager {
     public func folder(for url: URL) -> Folder {
         Folder(ref: ref(for: url))
     }
+    
+    public func folder(for path: String) -> Folder {
+        folder(for: URL(fileURLWithPath: path))
+    }
 }

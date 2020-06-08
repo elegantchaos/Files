@@ -36,19 +36,24 @@ public struct Folder: FolderItem {
     public let ref: FolderManager.Ref
     public var isFile: Bool { false }
     
-    public func file(name: String, pathExtension: String) -> File {
-        let url = ref.url.appendingPathComponent(name).appendingPathExtension(pathExtension)
+    public func file(name: ItemName) -> File {
+        let url = ref.url.appending(name)
         return ref.manager.file(for: url)
     }
     
-    public func folder(name: String, pathExtension: String? = nil) -> Folder {
-        var url = ref.url.appendingPathComponent(name)
-        if let pathExtension = pathExtension {
-            url = url.appendingPathExtension(pathExtension)
-        }
+    public func folder(name: ItemName) -> Folder {
+        let url = ref.url.appending(name)
         return ref.manager.folder(for: url)
     }
 
+    public func create() {
+        do {
+            try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print(error)
+        }
+    }
+    
     public func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (FolderItem) -> Void) {
         forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
     }
@@ -73,25 +78,30 @@ public struct Folder: FolderItem {
             
         }
 
-        func recurseIfNecessary() {
+        func processFolders() {
             if recursive {
                 folders.forEach() { folder in
-                    let nested = parallel?.folder(name: folder.name, pathExtension: folder.pathExtension)
+                    let nested = parallel?.folder(name: name)
+                    nested?.create()
                     folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
                 }
+            } else {
+                folders.forEach({ block($0, parallel) })
             }
+        }
+        
+        func processFiles() {
+            files.forEach({ block($0, parallel) })
         }
         
         switch order {
         case .filesFirst:
-            files.forEach({ block($0, parallel) })
-            folders.forEach({ block($0, parallel) })
-            recurseIfNecessary()
+            processFiles()
+            processFolders()
             
         case .foldersFirst:
-            recurseIfNecessary()
-            folders.forEach({ block($0, parallel) })
-            files.forEach({ block($0, parallel) })
+            processFolders()
+            processFiles()
         }
     }
 }
