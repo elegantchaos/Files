@@ -22,6 +22,13 @@ public extension FileManager {
         return url
     }
 
+    func desktopDirectory() -> URL {
+        guard let url = urls(for: .desktopDirectory, in: .userDomainMask).first else {
+            fatalError("unable to get system cache directory - serious problems")
+        }
+        
+        return url
+    }
     func documentsDirectory() -> URL {
         guard let documentsURL = urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("unable to get system docs directory - serious problems")
