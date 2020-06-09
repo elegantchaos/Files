@@ -68,7 +68,7 @@ public struct Folder: FolderItem {
                 let values = try item.resourceValues(forKeys: [.isDirectoryKey])
                 if values.isDirectory ?? false {
                     let item = manager.folder(for: item)
-                    if filter.passes(item) { folders.append(item) }
+                    folders.append(item)
                 } else {
                     let item = manager.file(for: item)
                     if filter.passes(item) { files.append(item) }
@@ -85,9 +85,10 @@ public struct Folder: FolderItem {
                     nested?.create()
                     folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
                 }
-            } else {
-                folders.forEach({ block($0, parallel) })
             }
+            
+            let filtered = folders.filter({ filter.passes($0) })
+            filtered.forEach({ block($0, parallel) })
         }
         
         func processFiles() {
