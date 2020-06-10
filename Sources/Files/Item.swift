@@ -5,18 +5,20 @@
 
 import Foundation
 
-public protocol FolderItem {
+public protocol Item {
     var ref: FolderManager.Ref { get }
     var path: String { get }
     var isFile: Bool { get }
     var isHidden: Bool { get }
+    var exists: Bool { get }
     var name: ItemName { get }
-    func copy(to: Folder, as: ItemName?, replacing: Bool)
     func delete()
-    func rename(as: ItemName, replacing: Bool)
+    @discardableResult func copy(to: Folder, as: ItemName?, replacing: Bool) -> Self
+    @discardableResult func rename(as: ItemName, replacing: Bool) -> Self
+    func sameType(with url: URL) -> Self
 }
 
-public extension FolderItem {
+public extension Item {
     var isHidden: Bool {
         let values = try? ref.url.resourceValues(forKeys: [.isHiddenKey])
         return values?.isHidden ?? false
@@ -34,12 +36,12 @@ public extension FolderItem {
         let ext = ref.url.pathExtension
         return ItemName(ref.url.deletingPathExtension().lastPathComponent, pathExtension: ext.isEmpty ? nil : ext)
     }
-
-    func copy(to folder: Folder, as newName: ItemName? = nil, replacing: Bool = false) {
-        _ = rawCopy(to: folder, as: newName, replacing: replacing)
+    
+    var exists: Bool {
+        return ref.manager.manager.fileExists(atURL: ref.url)
     }
     
-    internal func rawCopy(to folder: Folder, as newName: ItemName? = nil, replacing: Bool = false) -> URL {
+    @discardableResult func copy(to folder: Folder, as newName: ItemName?, replacing: Bool = false) -> Self {
         let source = ref.url
         var dest = folder.ref.url
         if let name = newName {
@@ -58,7 +60,7 @@ public extension FolderItem {
             print(error)
         }
 
-        return dest
+        return sameType(with: dest)
     }
     
     func delete() {
@@ -69,7 +71,7 @@ public extension FolderItem {
         }
     }
     
-    func rename(as newName: ItemName, replacing: Bool = false) {
+    @discardableResult func rename(as newName: ItemName, replacing: Bool = false) -> Self {
         let source = ref.url
         let dest = ref.url.deletingLastPathComponent().appending(newName)
         do {
@@ -78,9 +80,20 @@ public extension FolderItem {
             }
             
             try ref.manager.manager.moveItem(at: source, to: dest)
+            return sameType(with: dest)
         } catch {
             print(error)
+            return self
         }
+    }
+
+    @discardableResult func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) -> Self {
+        let name = newName == nil ? nil : ItemName(newName!)
+        return copy(to: folder, as: name, replacing: replacing)
+    }
+    
+    @discardableResult func rename(as newName: String, replacing: Bool = false) -> Self {
+        return rename(as: ItemName(newName), replacing: replacing)
     }
 }
 

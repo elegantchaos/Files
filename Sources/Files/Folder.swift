@@ -5,17 +5,17 @@
 
 import Foundation
 
-public struct Folder: FolderItem {
+public struct Folder: Item {
     public indirect enum Filter {
         case none
         case files
         case folders
         case visible
         case hidden
-        case custom((FolderItem) -> Bool)
+        case custom((Item) -> Bool)
         case compound(Filter, Filter)
         
-        func passes(_ item: FolderItem) -> Bool {
+        func passes(_ item: Item) -> Bool {
             switch self {
             case .none: return true
             case .files: return item.isFile
@@ -40,18 +40,24 @@ public struct Folder: FolderItem {
         let url = ref.url.appending(name)
         return ref.manager.file(for: url)
     }
-    
+
     public func folder(_ name: ItemName) -> Folder {
         let url = ref.url.appending(name)
         return ref.manager.folder(for: url)
     }
 
-    public func item(_ name: ItemName) -> FolderItem? {
+    public func item(_ name: ItemName) -> Item? {
         let url = ref.url.appending(name)
         var isDirectory: ObjCBool = false
         guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
         return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
     }
+
+    public func item(_ name: String) -> Item? { item(ItemName(name)) }
+    public func file(_ name: String) -> File { file(ItemName(name)) }
+    public func folder(_ name: String) -> Folder { folder(ItemName(name)) }
+
+
     public func folder(_ components: [String]) -> Folder {
         let url = ref.url.appendingPathComponents(components)
         return ref.manager.folder(for: url)
@@ -62,11 +68,6 @@ public struct Folder: FolderItem {
         return ref.manager.folder(for: url)
     }
 
-    public func copy(to folder: Folder, as newName: ItemName? = nil, replacing: Bool = false) -> Folder {
-        let url = rawCopy(to: folder, as: newName, replacing: replacing)
-        return ref.manager.folder(for: url)
-    }
-
     public func create() {
         do {
             try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
@@ -74,12 +75,16 @@ public struct Folder: FolderItem {
             print(error)
         }
     }
-    
-    public func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (FolderItem) -> Void) {
+
+    public func sameType(with url: URL) -> Folder {
+        return ref.manager.folder(for: url)
+    }
+
+    public func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item) -> Void) {
         forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
     }
 
-    public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (FolderItem, Folder?) -> Void) {
+    public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Folder?) -> Void) {
         var files: [File] = []
         var folders: [Folder] = []
         do {

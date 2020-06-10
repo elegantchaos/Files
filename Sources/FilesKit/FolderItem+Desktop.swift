@@ -10,7 +10,7 @@ import Files
 import Files
 import AppKit
 
-extension FolderItem {
+extension Item {
     public func reveal() {
         NSWorkspace.shared.open(url)
     }
