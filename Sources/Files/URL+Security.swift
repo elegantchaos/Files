@@ -5,6 +5,8 @@
 
 import Foundation
 
+#if os(iOS) || os(macOS)
+
 public extension URL.BookmarkCreationOptions {
     #if os(iOS)
     static var defaultSecureBookmarkOptions: Self = Self()
@@ -14,13 +16,13 @@ public extension URL.BookmarkCreationOptions {
 }
 
 public extension URL {
-    #if os(iOS) || os(macOS)
     
-    func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
+    /// Do something with a security scoped resource.
+    func accessSecurityScopedResource(withPathComponents components: [String] = [], block: (URL) -> Void) {
         guard startAccessingSecurityScopedResource() else {
             return
         }
-
+        
         defer { stopAccessingSecurityScopedResource() }
         
         let targetURL = appendingPathComponents(components)
@@ -34,7 +36,7 @@ public extension URL {
         guard startAccessingSecurityScopedResource() else {
             return nil
         }
-            
+        
         defer { stopAccessingSecurityScopedResource() }
         
         return try? bookmarkData(options: options, includingResourceValuesForKeys: nil, relativeTo: nil)
@@ -48,13 +50,18 @@ public extension URL {
         guard let resolved = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale), !isStale else {
             return nil
         }
-
+        
         return resolved
     }
-    #else
+}
+
+#else
+
+public extension URL {
     func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
         let targetURL = appendingPathComponents(components)
         block(targetURL)
     }
-    #endif
 }
+
+#endif
