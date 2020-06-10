@@ -29,6 +29,11 @@ public extension FileManager {
         
         return url
     }
+
+    func workingDirectory() -> URL {
+        return URL(fileURLWithPath: currentDirectoryPath)
+    }
+
     func documentsDirectory() -> URL {
         guard let documentsURL = urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("unable to get system docs directory - serious problems")

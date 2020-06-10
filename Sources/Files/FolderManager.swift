@@ -27,6 +27,11 @@ public struct FolderManager {
         return Folder(ref: Ref(url: url, manager: self))
     }
 
+    public var current: Folder {
+        let url = manager.workingDirectory()
+        return Folder(ref: Ref(url: url, manager: self))
+    }
+
     public func ref(for url: URL) -> Ref {
         Ref(url: url, manager: self)
     }

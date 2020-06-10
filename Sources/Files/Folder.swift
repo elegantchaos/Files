@@ -36,13 +36,34 @@ public struct Folder: FolderItem {
     public let ref: FolderManager.Ref
     public var isFile: Bool { false }
     
-    public func file(name: ItemName) -> File {
+    public func file(_ name: ItemName) -> File {
         let url = ref.url.appending(name)
         return ref.manager.file(for: url)
     }
     
-    public func folder(name: ItemName) -> Folder {
+    public func folder(_ name: ItemName) -> Folder {
         let url = ref.url.appending(name)
+        return ref.manager.folder(for: url)
+    }
+
+    public func item(_ name: ItemName) -> FolderItem? {
+        let url = ref.url.appending(name)
+        var isDirectory: ObjCBool = false
+        guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
+        return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
+    }
+    public func folder(_ components: [String]) -> Folder {
+        let url = ref.url.appendingPathComponents(components)
+        return ref.manager.folder(for: url)
+    }
+
+    public var up: Folder {
+        let url = ref.url.deletingLastPathComponent()
+        return ref.manager.folder(for: url)
+    }
+
+    public func copy(to folder: Folder, as newName: ItemName? = nil, replacing: Bool = false) -> Folder {
+        let url = rawCopy(to: folder, as: newName, replacing: replacing)
         return ref.manager.folder(for: url)
     }
 
@@ -81,7 +102,7 @@ public struct Folder: FolderItem {
         func processFolders() {
             if recursive {
                 folders.forEach() { folder in
-                    let nested = parallel?.folder(name: name)
+                    let nested = parallel?.folder(name)
                     nested?.create()
                     folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
                 }
@@ -105,4 +126,8 @@ public struct Folder: FolderItem {
             processFiles()
         }
     }
+}
+
+extension Folder: CustomStringConvertible {
+    public var description: String { "Folder(\"\(name.fullName)\")" }
 }

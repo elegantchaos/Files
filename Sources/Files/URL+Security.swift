@@ -21,7 +21,7 @@ public extension URL {
     /// Returns bookmark data for a security scoped URL.
     /// - Parameter options: bookmark creation options
     /// - Returns: The bookmark data, or nil if something goes wrong.
-    func secureBookmark(options:  URL.BookmarkCreationOptions = .minimalBookmark) -> Data? {
+    func secureBookmark(options:  URL.BookmarkCreationOptions = .withSecurityScope) -> Data? {
         guard startAccessingSecurityScopedResource() else {
             return nil
         }
