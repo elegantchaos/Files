@@ -5,8 +5,17 @@
 
 import Foundation
 
+public extension URL.BookmarkCreationOptions {
+    #if os(iOS)
+    static var defaultSecureBookmarkOptions: Self = Self()
+    #elseif os(macOS)
+    static var defaultSecureBookmarkOptions: Self = .withSecurityScope
+    #endif
+}
+
 public extension URL {
     #if os(iOS) || os(macOS)
+    
     func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
         guard startAccessingSecurityScopedResource() else {
             return
@@ -21,7 +30,7 @@ public extension URL {
     /// Returns bookmark data for a security scoped URL.
     /// - Parameter options: bookmark creation options
     /// - Returns: The bookmark data, or nil if something goes wrong.
-    func secureBookmark(options:  URL.BookmarkCreationOptions = .withSecurityScope) -> Data? {
+    func secureBookmark(options:  URL.BookmarkCreationOptions = .defaultSecureBookmarkOptions) -> Data? {
         guard startAccessingSecurityScopedResource() else {
             return nil
         }
