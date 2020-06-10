@@ -26,6 +26,10 @@ public extension FolderItem {
         ref.url.path
     }
     
+    var url: URL {
+        ref.url
+    }
+    
     var name: ItemName {
         let ext = ref.url.pathExtension
         return ItemName(ref.url.deletingPathExtension().lastPathComponent, pathExtension: ext.isEmpty ? nil : ext)

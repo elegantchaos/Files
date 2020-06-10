@@ -15,6 +15,20 @@
 
 [comment]: <> (End of ActionStatus Header)
 
-# Files
+# Swift file handling utilities.
 
-Miscellaneous Swift File and URL extensions.
+This package supplies two libraries:
+
+## Files
+
+Miscellaneous FileManager and URL extensions.
+
+A File/Folder abstraction.
+
+## FilesKit
+
+Desktop/shell support built on top of the basic Files library.
+
+Requires AppKit/UIKit (depending on the platform you build it for).
+
+

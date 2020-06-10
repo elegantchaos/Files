@@ -19,5 +19,5 @@ public struct File: FolderItem {
 }
 
 extension File: CustomStringConvertible {
-    public var description: String { "File(\"\(name.fullName)\")" }
+    public var description: String { "📄: \"\(name.fullName)\" (\(ref.url.path))" }
 }

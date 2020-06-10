@@ -22,15 +22,9 @@ public struct FolderManager {
     
     public static var shared = FolderManager(manager: FileManager.default)
 
-    public var desktop: Folder {
-        let url = manager.desktopDirectory()
-        return Folder(ref: Ref(url: url, manager: self))
-    }
-
-    public var current: Folder {
-        let url = manager.workingDirectory()
-        return Folder(ref: Ref(url: url, manager: self))
-    }
+    public var desktop: Folder { return Folder(ref: Ref(url: manager.desktopDirectory(), manager: self)) }
+    public var current: Folder { return Folder(ref: Ref(url: manager.workingDirectory(), manager: self)) }
+    public var home: Folder { return Folder(ref: Ref(url: manager.homeDirectory(), manager: self)) }
 
     public func ref(for url: URL) -> Ref {
         Ref(url: url, manager: self)

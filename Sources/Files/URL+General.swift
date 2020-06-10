@@ -8,4 +8,8 @@ public extension URL {
         }
         return url
     }
+    
+    init(fileURLExpandingPath path: String) {
+        self.init(fileURLWithPath: (path as NSString).expandingTildeInPath)
+    }
 }

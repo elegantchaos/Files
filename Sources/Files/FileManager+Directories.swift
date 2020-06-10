@@ -6,41 +6,27 @@
 import Foundation
 
 public extension FileManager {
-    func cacheDirectory() -> URL {
-        guard let url = urls(for: .cachesDirectory, in: .userDomainMask).first else {
-            fatalError("unable to get system cache directory - serious problems")
+    func systemDirectory(for directory: FileManager.SearchPathDirectory)-> URL {
+        guard let url = urls(for: directory, in: .userDomainMask).first else {
+            fatalError("unable to get \(directory) - serious problems")
         }
         
         return url
     }
+    
+    func cacheDirectory() -> URL { systemDirectory(for: .cachesDirectory) }
+    func temporaryDirectory() -> URL {systemDirectory(for: .itemReplacementDirectory) }
+    func desktopDirectory() -> URL { systemDirectory(for: .desktopDirectory) }
+    func documentsDirectory() -> URL { systemDirectory(for: .documentDirectory) }
 
-    func temporaryDirectory() -> URL {
-        guard let url = urls(for: .itemReplacementDirectory, in: .userDomainMask).first else {
-            fatalError("unable to get system cache directory - serious problems")
-        }
-        
-        return url
-    }
-
-    func desktopDirectory() -> URL {
-        guard let url = urls(for: .desktopDirectory, in: .userDomainMask).first else {
-            fatalError("unable to get system cache directory - serious problems")
-        }
-        
-        return url
+    func homeDirectory() -> URL {
+        return URL(fileURLExpandingPath: "~/")
     }
 
     func workingDirectory() -> URL {
         return URL(fileURLWithPath: currentDirectoryPath)
     }
 
-    func documentsDirectory() -> URL {
-        guard let documentsURL = urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("unable to get system docs directory - serious problems")
-        }
-        
-        return documentsURL
-    }
 
     /// Return a url to use as an initial location for a new file.
     /// - Parameters:

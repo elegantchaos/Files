@@ -8,6 +8,9 @@ let package = Package(
         .library(
             name: "Files",
             targets: ["Files"]),
+    .library(
+        name: "FilesKit",
+        targets: ["FilesKit"]),
     ],
     dependencies: [
     ],
@@ -15,6 +18,9 @@ let package = Package(
         .target(
             name: "Files",
             dependencies: []),
+        .target(
+            name: "FilesKit",
+            dependencies: ["Files"]),
         .testTarget(
             name: "FilesTests",
             dependencies: ["Files"]),

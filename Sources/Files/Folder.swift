@@ -129,5 +129,5 @@ public struct Folder: FolderItem {
 }
 
 extension Folder: CustomStringConvertible {
-    public var description: String { "Folder(\"\(name.fullName)\")" }
+    public var description: String { "📁: \"\(name.fullName)\" (\(ref.url.path))" }
 }
