@@ -36,34 +36,7 @@ public struct Folder: Item {
     public let ref: FolderManager.Ref
     public var isFile: Bool { false }
     
-    public var lazy: LazyFolder { LazyFolder(wrapped: self) }
-
-    public func file(_ name: ItemName) -> File {
-        let url = ref.url.appending(name)
-        return ref.manager.file(for: url)
-    }
-
-    public func folder(_ name: ItemName) -> Folder {
-        let url = ref.url.appending(name)
-        return ref.manager.folder(for: url)
-    }
-
-    public func item(_ name: ItemName) -> Item? {
-        let url = ref.url.appending(name)
-        var isDirectory: ObjCBool = false
-        guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
-        return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
-    }
-
-    public func item(_ name: String) -> Item? { item(ItemName(name)) }
-    public func file(_ name: String) -> File { file(ItemName(name)) }
-    public func folder(_ name: String) -> Folder { folder(ItemName(name)) }
-
-
-    public func folder(_ components: [String]) -> Folder {
-        let url = ref.url.appendingPathComponents(components)
-        return ref.manager.folder(for: url)
-    }
+    public var quiet: QuietFolder { QuietFolder(wrapped: self) }
 
     public var up: Folder {
         let url = ref.url.deletingLastPathComponent()
@@ -71,9 +44,7 @@ public struct Folder: Item {
     }
 
     public func create() throws {
-        try ref.manager.attempt() {
-            try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
-        }
+        try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
     }
 
     public func sameType(with url: URL) -> Folder {
@@ -87,18 +58,16 @@ public struct Folder: Item {
     public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Folder?) -> Void) throws {
         var files: [File] = []
         var folders: [Folder] = []
-        try ref.manager.attempt {
-            let manager = ref.manager
-            let contents = try manager.manager.contentsOfDirectory(at: ref.url, includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey], options: [])
-            for item in contents {
-                let values = try item.resourceValues(forKeys: [.isDirectoryKey])
-                if values.isDirectory ?? false {
-                    let item = manager.folder(for: item)
-                    folders.append(item)
-                } else {
-                    let item = manager.file(for: item)
-                    if filter.passes(item) { files.append(item) }
-                }
+        let manager = ref.manager
+        let contents = try manager.manager.contentsOfDirectory(at: ref.url, includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey], options: [])
+        for item in contents {
+            let values = try item.resourceValues(forKeys: [.isDirectoryKey])
+            if values.isDirectory ?? false {
+                let item = manager.folder(for: item)
+                folders.append(item)
+            } else {
+                let item = manager.file(for: item)
+                if filter.passes(item) { files.append(item) }
             }
         }
 
@@ -128,6 +97,26 @@ public struct Folder: Item {
             try processFolders()
             processFiles()
         }
+    }
+}
+
+extension Folder: ItemContainer {
+    public typealias FileType = File
+    public typealias FolderType = Folder
+    
+    public func file(for url: URL) -> File {
+        return ref.manager.file(for: url)
+    }
+
+    public func folder(for url: URL) -> Folder {
+        return ref.manager.folder(for: url)
+    }
+
+    public func item(_ name: ItemName) -> ItemBase? {
+        let url = ref.url.appending(name)
+        var isDirectory: ObjCBool = false
+        guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
+        return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
     }
 }
 

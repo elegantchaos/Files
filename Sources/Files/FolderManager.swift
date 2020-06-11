@@ -52,23 +52,6 @@ public class FolderManager {
         folder(for: URL(fileURLWithPath: path))
     }
 
-    func attempt(_ action: () throws -> Void) rethrows {
-        do {
-            try action()
-        } catch {
-            log(error)
-        }
-    }
-
-    func attemptReturning<T>(_ action: () throws -> T?) rethrows -> T? {
-        do {
-            return try action()
-        } catch {
-            log(error)
-            return nil
-        }
-    }
-
     func log(_ string: String) {
         logHandler(string)
     }

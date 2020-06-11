@@ -16,7 +16,7 @@ public struct File: Item {
         return ref.manager.file(for: url)
     }
     
-    public var lazy: LazyFile { LazyFile(wrapped: self) }
+    public var quiet: QuietFile { QuietFile(wrapped: self) }
 }
 
 extension File: CustomStringConvertible {
