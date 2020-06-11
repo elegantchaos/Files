@@ -7,17 +7,24 @@ import Foundation
 
 public extension FileManager {
     func systemDirectory(for directory: FileManager.SearchPathDirectory)-> URL {
-        guard let url = urls(for: directory, in: .userDomainMask).first else {
-            fatalError("unable to get \(directory) - serious problems")
+        do {
+            return try url(for: directory, in: .userDomainMask, appropriateFor: nil, create: true)
+            } catch {
+            fatalError("unable to get \(directory) - serious problems \(error)")
         }
-        
-        return url
     }
     
     func cacheDirectory() -> URL { systemDirectory(for: .cachesDirectory) }
-    func temporaryDirectory() -> URL {systemDirectory(for: .itemReplacementDirectory) }
     func desktopDirectory() -> URL { systemDirectory(for: .desktopDirectory) }
     func documentsDirectory() -> URL { systemDirectory(for: .documentDirectory) }
+
+    func temporaryDirectory(forReplacing item: URL? = nil) -> URL {
+        if let item = item, let temp = try? self.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: item, create: true) {
+            return temp
+        }
+
+        return URL(fileURLWithPath: NSTemporaryDirectory())
+    }
 
     func homeDirectory() -> URL {
         return URL(fileURLExpandingPath: "~/")

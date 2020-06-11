@@ -30,8 +30,8 @@ public class FolderManager {
     public var home: Folder { return Folder(ref: Ref(url: manager.homeDirectory(), manager: self)) }
     public var temporary: Folder { return Folder(ref: Ref(url: manager.temporaryDirectory(), manager: self)) }
     
-    init(manager: FileManager, fileManager: FileManager = .default, logHandler: LogHandler? = nil, errorHandler: ErrorHandler? = nil) {
-        self.manager = FileManager.default
+    init(manager: FileManager = FileManager.default, fileManager: FileManager = .default, logHandler: LogHandler? = nil, errorHandler: ErrorHandler? = nil) {
+        self.manager = manager
         self.logHandler = logHandler ?? { string in print(string) }
         self.errorHandler = errorHandler ?? { error in print(error) }
     }

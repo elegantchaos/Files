@@ -63,4 +63,12 @@ final class FolderManagerTests: XCTestCase {
         let file = FolderManager.shared.file(for: url)
         XCTAssertTrue(file.isHidden)
     }
+    
+    func testFailure() {
+        var receivedError: NSError? = nil
+        let fm = FolderManager(errorHandler: { error in receivedError = error as NSError })
+        fm.temporary.file("non-existent").rename(as: "test")
+        XCTAssertEqual(receivedError?.code, 4)
+        XCTAssertEqual(receivedError?.domain, "NSCocoaErrorDomain")
+    }
 }
