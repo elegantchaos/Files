@@ -159,17 +159,17 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertEqual(names.count, 0)
     }
 
-    func testTypePropogation() {
-        let temp = FolderManager.shared.temporary
-        XCTAssertTrue(temp is Folder)
-        XCTAssertTrue(temp.file("test") is File)
-        XCTAssertTrue(temp.folder("test") is Folder)
-        XCTAssertTrue(temp.up is Folder)
-
-        let quiet = temp.quiet
-        XCTAssertTrue(quiet is QuietFolder)
-        XCTAssertTrue(quiet.file("test") is QuietFile)
-        XCTAssertTrue(quiet.folder("test") is QuietFolder)
-        XCTAssertTrue(quiet.up is QuietFolder)
-    }
+//    func testTypePropogation() {
+//        let temp = FolderManager.shared.temporary
+//        XCTAssertTrue(temp is Folder)
+//        XCTAssertTrue(temp.file("test") is File)
+//        XCTAssertTrue(temp.folder("test") is Folder)
+//        XCTAssertTrue(temp.up is Folder)
+//
+//        let quiet = temp.quiet
+//        XCTAssertTrue(quiet is QuietFolder)
+//        XCTAssertTrue(quiet.file("test") is QuietFile)
+//        XCTAssertTrue(quiet.folder("test") is QuietFolder)
+//        XCTAssertTrue(quiet.up is QuietFolder)
+//    }
 }

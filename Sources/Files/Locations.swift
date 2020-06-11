@@ -10,15 +10,36 @@ public protocol NuItem where Manager: LocationsManager {
     
     var ref: Manager.ReferenceType { get }
     init(ref: Manager.ReferenceType)
+    var url: URL { get }
+    var path: String { get }
+    var isFile: Bool { get }
+    var isHidden: Bool { get }
+    var exists: Bool { get }
 }
 
 public extension NuItem {
+    var url: URL { ref.url }
+    var path: String { ref.url.path }
+
+    var isHidden: Bool {
+        let values = try? ref.url.resourceValues(forKeys: [.isHiddenKey])
+        return values?.isHidden ?? false
+    }
     
+    
+    var name: ItemName {
+        let ext = ref.url.pathExtension
+        return ItemName(ref.url.deletingPathExtension().lastPathComponent, pathExtension: ext.isEmpty ? nil : ext)
+    }
+    
+    var exists: Bool {
+        return ref.manager.manager.fileExists(atURL: ref.url)
+    }
 }
+
 public protocol NuItemContainer: NuItem {
     typealias FileType = Manager.FileType
     typealias FolderType = Manager.FolderType
-    var ref: FolderManager.Ref { get }
 //    var up: FolderType { get }
 //    func file(_ name: ItemName) -> FileType
 //    func folder(_ name: ItemName) -> FolderType
@@ -30,6 +51,7 @@ public protocol NuItemContainer: NuItem {
 //    func file(for url: URL) -> FileType
 //    func forEach(inParallelWith parallel: Self?, order: Order, filter: Filter, recursive: Bool, do block: (ItemType, Self?) -> Void) throws
 }
+
 public protocol LocationsManager where FileType: NuItem, FolderType: NuItemContainer, ReferenceType: LocationRef, ReferenceType.Manager == Self, FileType.Manager == Self, FolderType.Manager == Self {
     var manager: FileManager { get }
     associatedtype FileType
@@ -87,9 +109,15 @@ struct ThrowingLocations: LocationsManager {
 struct NuFile: NuItem {
     typealias Manager = ThrowingLocations
     let ref: ThrowingRef
+    var isFile: Bool { true }
 }
 
 struct NuFolder: NuItemContainer {
     typealias Manager = ThrowingLocations
     let ref: ThrowingRef
+    var isFile: Bool { false }
+}
+
+extension FileManager {
+    var locations: ThrowingLocations { ThrowingLocations(manager: self) }
 }
