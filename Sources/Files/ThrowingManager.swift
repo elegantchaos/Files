@@ -5,24 +5,25 @@
 
 import Foundation
 
-struct ThrowingRef: LocationRef {
-    typealias Manager = ThrowingManager
+public struct ThrowingRef: LocationRef {
+    public typealias Manager = ThrowingManager
 
-    let url: URL
-    let manager: ThrowingManager
-    init(for url: URL, manager: Manager) {
+    public let url: URL
+    public let manager: ThrowingManager
+    public init(for url: URL, manager: Manager) {
         self.url = url
         self.manager = manager
     }
 }
 
-struct ThrowingManager: FolderManager {
-    let manager: FileManager
-    typealias FileType = File
-    typealias FolderType = Folder
-    typealias ReferenceType = ThrowingRef
+public struct ThrowingManager: FolderManager {
+    public let manager: FileManager
+    public typealias FileType = File
+    public typealias FolderType = Folder
+    public typealias ItemType = ThrowingDeletableItem
+    public typealias ReferenceType = ThrowingRef
 }
 
-extension FileManager {
+public extension FileManager {
     var locations: ThrowingManager { ThrowingManager(manager: self) }
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct QuietFolder: QuietContainer {
+struct QuietFolder: ItemContainer, QuietItem {
     let ref: QuietRef
     var isFile: Bool { false }
     typealias Manager = QuietLocationManager

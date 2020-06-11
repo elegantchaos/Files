@@ -6,12 +6,16 @@
 import Foundation
 
 
-struct File: ThrowingItem {
-    typealias Manager = ThrowingManager
-    let ref: ThrowingRef
-    var isFile: Bool { true }
-
+public struct File: ThrowingItem, ThrowingDeletableItem {
+    public typealias Manager = ThrowingManager
+    public let ref: ThrowingRef
+    public var isFile: Bool { true }
     public var asText: String? { try? String(contentsOf: ref.url, encoding: .utf8) }
+    
+    public init(ref: ThrowingRef) {
+        self.ref = ref
+    }
+    
     public func write(as text: String) { try? text.write(to: ref.url, atomically: true, encoding: .utf8) }
 }
 

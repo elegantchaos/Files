@@ -5,16 +5,20 @@
 
 import Foundation
 
-struct Folder: ThrowingContainer {
-    typealias Manager = ThrowingManager
-    let ref: ThrowingRef
-    var isFile: Bool { false }
+public struct Folder: ItemContainer, ThrowingItem {
+    public typealias Manager = ThrowingManager
+    public let ref: ThrowingRef
+    public var isFile: Bool { false }
 
+    public init(ref: ThrowingRef) {
+        self.ref = ref
+    }
+    
     public func create() throws {
         try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
     }
     
-    @discardableResult func copy(to folder: Folder, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+    @discardableResult public func copy(to folder: Folder, as newName: ItemName?, replacing: Bool = false) throws -> Self {
         let source = ref.url
         var dest = folder.ref.url
         if let name = newName {
@@ -32,16 +36,16 @@ struct Folder: ThrowingContainer {
         return sameType(with: dest)
     }
 
-    @discardableResult func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) throws -> Self {
+    @discardableResult public func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) throws -> Self {
         let name = newName == nil ? nil : ItemName(newName!)
         return try copy(to: folder, as: name, replacing: replacing)
     }
     
-    @discardableResult func rename(as newName: String, replacing: Bool = false) throws -> Self {
+    @discardableResult public func rename(as newName: String, replacing: Bool = false) throws -> Self {
         return try rename(as: ItemName(newName), replacing: replacing)
     }
     
-    @discardableResult func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
+    @discardableResult public func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
         let source = ref.url
         let dest = ref.url.deletingLastPathComponent().appending(newName)
         if replacing {

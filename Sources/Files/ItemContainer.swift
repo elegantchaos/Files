@@ -43,7 +43,7 @@ public protocol ItemContainer: Item {
     func folder(_ name: String) -> FolderType
     func item(_ name: ItemName) -> ItemCommon?
     func item(_ name: String) -> ItemCommon?
-    func forEach(inParallelWith parallel: FolderType?, order: Order, filter: Filter, recursive: Bool, do block: (ItemCommon, FolderType?) -> Void) throws
+    func forEach(inParallelWith parallel: FolderType?, order: Order, filter: Filter, recursive: Bool, do block: (ItemCommon, FolderType?) throws -> Void) throws
 }
 
 public extension ItemContainer {
@@ -83,11 +83,11 @@ public extension ItemContainer {
     }
     
     
-    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemCommon) -> Void) throws {
-        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType) throws -> Void) throws {
+        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in try block(item) }
     }
     
-    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemCommon, FolderType?) -> Void) throws {
+    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType, FolderType?) throws -> Void) throws {
         var files: [FileType] = []
         var folders: [FolderType] = []
         let manager = ref.manager
@@ -120,21 +120,21 @@ public extension ItemContainer {
             }
             
             let filtered = folders.filter({ return filter.passes($0) })
-            filtered.forEach({ block($0, parallel) })
+            try filtered.forEach({ try block($0, parallel) })
         }
         
-        func processFiles() {
-            files.forEach({ block($0, parallel) })
+        func processFiles() throws {
+            try files.forEach({ try block($0, parallel) })
         }
         
         switch order {
         case .filesFirst:
-            processFiles()
+            try processFiles()
             try processFolders()
             
         case .foldersFirst:
             try processFolders()
-            processFiles()
+            try processFiles()
         }
     }
 }

@@ -14,7 +14,6 @@ public protocol ItemCommon {
 
 public protocol Item: ItemCommon where Manager: FolderManager {
     associatedtype Manager
-//    typealias ItemType = Self
     var ref: Manager.ReferenceType { get }
     init(ref: Manager.ReferenceType)
     var path: String { get }

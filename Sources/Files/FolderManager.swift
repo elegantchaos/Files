@@ -10,9 +10,11 @@ public protocol FolderManager where FileType: Item, FolderType: ItemContainer, R
     associatedtype FileType
     associatedtype FolderType
     associatedtype ReferenceType
+    typealias ItemType = ItemCommon
     
     func folder(for url: URL) -> FolderType
     func file(for url: URL) -> FileType
+    func item(for url: URL) -> ItemType
 }
 
 public protocol LocationRef {
@@ -35,6 +37,15 @@ public extension FolderManager {
         return FileType(ref: ref(for: url))
     }
 
+    func item(for url: URL) -> ItemType {
+        var isDirectory: ObjCBool = false
+        if manager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
+            return folder(for: url)
+        } else {
+            return file(for: url)
+        }
+    }
+    
     var desktop: FolderType { return folder(for: manager.desktopDirectory()) }
     var current: FolderType { return folder(for: manager.workingDirectory()) }
     var home: FolderType { return folder(for: manager.homeDirectory()) }

@@ -5,6 +5,10 @@
 
 import Foundation
 
+//protocol QuietDeletableItem: ItemCommon {
+//    func delete()
+//}
+//
 protocol QuietItem: Item {
 }
 

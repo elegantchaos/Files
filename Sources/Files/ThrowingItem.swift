@@ -5,13 +5,16 @@
 
 import Foundation
 
-protocol ThrowingItem: Item {
+public protocol ThrowingDeletableItem: ItemCommon {
     func delete() throws
+}
+
+public protocol ThrowingItem: Item, ThrowingDeletableItem {
     @discardableResult func copy(to: Manager.FolderType, as: ItemName?, replacing: Bool) throws -> Self
     @discardableResult func rename(as: ItemName, replacing: Bool) throws -> Self
 }
 
-extension ThrowingItem {
+public extension ThrowingItem {
     func delete() throws {
         try ref.manager.manager.removeItem(at: ref.url)
     }
