@@ -5,13 +5,13 @@
 
 import Foundation
 
-public protocol ThrowingDeletableItem: ItemCommon {
+public protocol ThrowingCommon: ItemCommon {
     func delete() throws
+    @discardableResult func rename(as: ItemName, replacing: Bool) throws -> Self
+    @discardableResult func copy(to: Folder, as: ItemName?, replacing: Bool) throws -> Self
 }
 
-public protocol ThrowingItem: Item, ThrowingDeletableItem {
-    @discardableResult func copy(to: Manager.FolderType, as: ItemName?, replacing: Bool) throws -> Self
-    @discardableResult func rename(as: ItemName, replacing: Bool) throws -> Self
+public protocol ThrowingItem: Item, ThrowingCommon {
 }
 
 public extension ThrowingItem {

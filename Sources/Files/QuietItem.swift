@@ -5,11 +5,13 @@
 
 import Foundation
 
-//protocol QuietDeletableItem: ItemCommon {
-//    func delete()
-//}
-//
-protocol QuietItem: Item {
+
+protocol QuietCommon: ItemCommon {
+    func delete()
+    func rename(as newName: ItemName, replacing: Bool) -> Self
+}
+
+protocol QuietItem: Item, QuietCommon {
 }
 
 extension QuietItem where Manager == QuietLocationManager {

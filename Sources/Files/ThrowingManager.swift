@@ -20,7 +20,6 @@ public struct ThrowingManager: FolderManager {
     public let manager: FileManager
     public typealias FileType = File
     public typealias FolderType = Folder
-    public typealias ItemType = ThrowingDeletableItem
     public typealias ReferenceType = ThrowingRef
 }
 

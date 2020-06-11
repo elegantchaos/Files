@@ -41,5 +41,9 @@ public extension Item {
     func sameType(with url: URL) -> Self {
         return Self(ref: ref.manager.ref(for: url))
     }
+    
+    var up: Manager.FolderType {
+        ref.manager.folder(for: ref.url.deletingLastPathComponent())
+    }
 }
 

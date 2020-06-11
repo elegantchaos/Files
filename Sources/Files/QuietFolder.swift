@@ -5,17 +5,6 @@
 
 import Foundation
 
-protocol QuietCommon: ItemCommon {
-    func delete()
-}
-
-extension QuietFile: QuietCommon {
-}
-
-extension QuietFolder: QuietCommon {
-    
-}
-
 struct QuietFolder: ItemContainer, QuietItem {
     let ref: QuietRef
     var isFile: Bool { false }

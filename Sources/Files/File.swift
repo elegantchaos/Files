@@ -6,7 +6,7 @@
 import Foundation
 
 
-public struct File: ThrowingItem, ThrowingDeletableItem {
+public struct File: ThrowingItem {
     public typealias Manager = ThrowingManager
     public let ref: ThrowingRef
     public var isFile: Bool { true }

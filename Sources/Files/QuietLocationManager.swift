@@ -21,6 +21,7 @@ struct QuietLocationManager: FolderManager {
     typealias FileType = QuietFile
     typealias FolderType = QuietFolder
     typealias ReferenceType = QuietRef
+    typealias ItemType = QuietCommon
     
     public typealias LogHandler = (String) -> Void
     public typealias ErrorHandler = (Error) -> Void

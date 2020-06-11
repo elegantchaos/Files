@@ -28,7 +28,7 @@ public indirect enum Filter {
 }
 
 public enum Order {
-    case filesFirst
+    case filesFirst 
     case foldersFirst
 }
 
@@ -36,7 +36,6 @@ public enum Order {
 public protocol ItemContainer: Item {
     typealias FileType = Manager.FileType
     typealias FolderType = Manager.FolderType
-    var up: FolderType { get }
     func file(_ name: ItemName) -> FileType
     func folder(_ name: ItemName) -> FolderType
     func file(_ name: String) -> FileType
@@ -47,10 +46,6 @@ public protocol ItemContainer: Item {
 }
 
 public extension ItemContainer {
-    var up: FolderType {
-        ref.manager.folder(for: ref.url.deletingLastPathComponent())
-    }
-    
     func file(_ name: ItemName) -> FileType {
         return ref.manager.file(for: ref.url.appending(name))
     }
@@ -81,8 +76,8 @@ public extension ItemContainer {
     func item(_ name: String) -> ItemCommon? {
         item(ItemName(name))
     }
-        
-    func _forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType, FolderType?) throws -> Void) throws {
+    
+    func _forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemCommon, FolderType?) throws -> Void) throws {
         var files: [FileType] = []
         var folders: [FolderType] = []
         let manager = ref.manager
@@ -115,11 +110,11 @@ public extension ItemContainer {
             }
             
             let filtered = folders.filter({ return filter.passes($0) })
-            try filtered.forEach({ try block($0, parallel) })
+            try filtered.forEach({ try block($0 as! Manager.ItemType, parallel) })
         }
         
         func processFiles() throws {
-            try files.forEach({ try block($0, parallel) })
+            try files.forEach({ try block($0 as! Manager.ItemType, parallel) })
         }
         
         switch order {

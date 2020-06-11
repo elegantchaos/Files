@@ -5,17 +5,6 @@
 
 import Foundation
 
-protocol ThrowingCommon: ItemCommon {
-    func delete() throws
-}
-
-extension File: ThrowingCommon {
-}
-
-extension Folder: ThrowingCommon {
-    
-}
-
 public struct Folder: ItemContainer, ThrowingItem {
     public typealias Manager = ThrowingManager
     public let ref: ThrowingRef
@@ -68,8 +57,8 @@ public struct Folder: ItemContainer, ThrowingItem {
     }
     
     func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ThrowingCommon) throws -> Void) throws {
-        try _forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
-            item, _ in try block(item as! ThrowingCommon)
+        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item)
         }
     }
     

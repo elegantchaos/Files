@@ -40,9 +40,9 @@ public extension FolderManager {
     func item(for url: URL) -> ItemType {
         var isDirectory: ObjCBool = false
         if manager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return folder(for: url)
+            return folder(for: url) as! ItemType
         } else {
-            return file(for: url)
+            return file(for: url) as! ItemType
         }
     }
     
