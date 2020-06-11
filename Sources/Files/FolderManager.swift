@@ -14,8 +14,6 @@ public struct FolderManager {
             self.url = url
             self.manager = manager
         }
-        
-
     }
 
     let manager: FileManager
@@ -40,5 +38,28 @@ public struct FolderManager {
     
     public func folder(for path: String) -> Folder {
         folder(for: URL(fileURLWithPath: path))
+    }
+
+    func attempt(_ action: () throws -> Void) {
+        do {
+            try action()
+        } catch {
+            log(error)
+        }
+    }
+
+    func attemptReturning<T>(_ action: () throws -> T?) -> T? {
+        do {
+            return try action()
+        } catch {
+            log(error)
+            return nil
+        }
+    }
+
+    func log(_ string: String) {
+    }
+    
+    func log(_ error: Error) {
     }
 }

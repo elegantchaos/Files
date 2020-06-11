@@ -54,37 +54,30 @@ public extension Item {
             try? ref.manager.manager.removeItem(at: dest)
         }
 
-        do {
+        ref.manager.attempt() {
             try ref.manager.manager.copyItem(at: source, to: dest)
-        } catch {
-            print(error)
         }
 
         return sameType(with: dest)
     }
     
     func delete() {
-        do {
+        ref.manager.attempt() {
             try ref.manager.manager.removeItem(at: ref.url)
-        } catch {
-            print(error)
         }
     }
     
     @discardableResult func rename(as newName: ItemName, replacing: Bool = false) -> Self {
         let source = ref.url
         let dest = ref.url.deletingLastPathComponent().appending(newName)
-        do {
+        let renamed = ref.manager.attemptReturning() {
             if replacing {
                 try? ref.manager.manager.removeItem(at: dest)
             }
             
             try ref.manager.manager.moveItem(at: source, to: dest)
             return sameType(with: dest)
-        } catch {
-            print(error)
-            return self
-        }
+        } ?? self
     }
 
     @discardableResult func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) -> Self {
