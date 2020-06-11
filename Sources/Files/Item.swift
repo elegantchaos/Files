@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol ItemCommon {
+public protocol ItemCommon: CustomStringConvertible {
     var url: URL { get }
     var isFile: Bool { get }
     var isHidden: Bool { get }
@@ -47,3 +47,9 @@ public extension Item {
     }
 }
 
+public extension ItemCommon {
+    var description: String {
+        let kind = self.isFile ? "📄" : "📁"
+        return "\(kind): \"\(name.fullName)\" (\(url.path))"
+    }
+}

@@ -18,7 +18,3 @@ public struct File: ThrowingItem {
     
     public func write(as text: String) { try? text.write(to: ref.url, atomically: true, encoding: .utf8) }
 }
-
-extension File: CustomStringConvertible {
-    public var description: String { "📄: \"\(name.fullName)\" (\(ref.url.path))" }
-}

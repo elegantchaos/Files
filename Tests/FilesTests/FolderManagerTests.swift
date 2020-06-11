@@ -69,12 +69,13 @@ final class FolderManagerTests: XCTestCase {
         
         let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
         let renamed = folder.rename(as: "Test2")
+        XCTAssertNotNil(renamed)
         XCTAssertFalse(FileManager.default.fileExists(atURL: url))
         XCTAssertFalse(folder.exists)
         
         XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed.exists)
-        renamed.delete()
+        XCTAssertTrue(renamed!.exists)
+        renamed!.delete()
         
         XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
         
@@ -116,12 +117,13 @@ final class FolderManagerTests: XCTestCase {
         
         let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
         let renamed = file.rename(as: "Test2")
+        XCTAssertNotNil(renamed)
         XCTAssertFalse(FileManager.default.fileExists(atURL: url))
         XCTAssertFalse(file.exists)
         
         XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed.exists)
-        renamed.delete()
+        XCTAssertTrue(renamed!.exists)
+        renamed!.delete()
         
         XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
     }
@@ -141,8 +143,26 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertTrue(temp.exists)
         XCTAssertTrue(temp.isFile)
         XCTAssertTrue(container.exists)
+        let copied = try! temp.copy(to: container, as: "another")
+        XCTAssertTrue(copied.exists)
+        XCTAssertTrue(copied.url != temp.url)
+        XCTAssertTrue(copied.url.deletingLastPathComponent() == temp.url.deletingLastPathComponent())
     }
-    
+
+    func testQuietCopy() {
+        let url = makeTestFile()
+        let temp = FileManager.default.quiet.file(for: url)
+        let container = temp.up
+        XCTAssertTrue(temp.exists)
+        XCTAssertTrue(temp.isFile)
+        XCTAssertTrue(container.exists)
+        let copied = temp.copy(to: container, as: "another")
+        XCTAssertNotNil(copied)
+        XCTAssertTrue(copied!.exists)
+        XCTAssertTrue(copied!.url != temp.url)
+        XCTAssertTrue(copied!.url.deletingLastPathComponent() == temp.url.deletingLastPathComponent())
+    }
+
     func testFailure() {
         XCTAssertThrowsError(try FileManager.default.locations.temporary.file("non-existent").rename(as: "test"))
     }
@@ -181,7 +201,8 @@ final class FolderManagerTests: XCTestCase {
             XCTAssertNotNil(index)
             names.remove(at: index!)
             let renamed = item.rename(as: "blah", replacing: false)
-            renamed.delete()
+            XCTAssertNotNil(renamed)
+            renamed!.delete()
         }
         XCTAssertEqual(names.count, 0)
     }

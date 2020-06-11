@@ -28,7 +28,7 @@ public indirect enum Filter {
 }
 
 public enum Order {
-    case filesFirst 
+    case filesFirst
     case foldersFirst
 }
 

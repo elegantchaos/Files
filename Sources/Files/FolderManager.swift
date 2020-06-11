@@ -17,7 +17,7 @@ public protocol FolderManager where FileType: Item, FolderType: ItemContainer, R
     func item(for url: URL) -> ItemType
 }
 
-public protocol LocationRef {
+public protocol LocationRef where Manager: FolderManager {
     associatedtype Manager
     var url: URL { get }
     var manager: Manager { get }
@@ -50,4 +50,25 @@ public extension FolderManager {
     var current: FolderType { return folder(for: manager.workingDirectory()) }
     var home: FolderType { return folder(for: manager.homeDirectory()) }
     var temporary: FolderType { return folder(for: manager.temporaryDirectory()) }
+}
+
+public extension LocationRef {
+    @discardableResult func copy(to folder: Self, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+        let source = url
+        var dest = folder.url
+        if let name = newName {
+            dest = dest.appending(name)
+        } else {
+            dest = dest.appendingPathComponent(source.lastPathComponent)
+        }
+
+        if replacing {
+            try? manager.manager.removeItem(at: dest)
+        }
+
+        try manager.manager.copyItem(at: source, to: dest)
+
+        return Self(for: dest, manager: manager)
+    }
+
 }

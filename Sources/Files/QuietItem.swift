@@ -8,14 +8,15 @@ import Foundation
 
 protocol QuietCommon: ItemCommon {
     func delete()
-    func rename(as newName: ItemName, replacing: Bool) -> Self
+    func rename(as newName: ItemName, replacing: Bool) -> Self?
+    @discardableResult func copy(to folder: QuietFolder, as newName: ItemName?, replacing: Bool) -> Self?
 }
 
 protocol QuietItem: Item, QuietCommon {
 }
 
 extension QuietItem where Manager == QuietLocationManager {
-    func rename(as newName: ItemName, replacing: Bool = false) -> Self {
+    func rename(as newName: ItemName, replacing: Bool = false) -> Self? {
         do {
             let source = ref.url
             let dest = ref.url.deletingLastPathComponent().appending(newName)
@@ -27,7 +28,7 @@ extension QuietItem where Manager == QuietLocationManager {
             return sameType(with: dest)
         } catch {
             ref.manager.log(error)
-            return self
+            return nil
         }
     }
     
@@ -36,4 +37,20 @@ extension QuietItem where Manager == QuietLocationManager {
             try ref.manager.manager.removeItem(at: ref.url)
         }
     }
+
+    @discardableResult func copy(to folder: QuietFolder, as newName: ItemName?, replacing: Bool = false) -> Self? {
+        do {
+            let copiedRef = try ref.copy(to: folder.ref, as: newName)
+            return Self(ref: copiedRef)
+        } catch {
+            ref.manager.log(error)
+            return nil
+        }
+    }
+
+    @discardableResult func copy(to folder: QuietFolder, as newName: String? = nil, replacing: Bool = false) -> Self? {
+        let name = newName == nil ? nil : ItemName(newName!)
+        return copy(to: folder, as: name, replacing: replacing)
+    }
+
 }
