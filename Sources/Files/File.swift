@@ -15,6 +15,8 @@ public struct File: Item {
     public func sameType(with url: URL) -> File {
         return ref.manager.file(for: url)
     }
+    
+    public var lazy: LazyFile { LazyFile(wrapped: self) }
 }
 
 extension File: CustomStringConvertible {

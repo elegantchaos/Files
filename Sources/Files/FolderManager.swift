@@ -52,7 +52,7 @@ public class FolderManager {
         folder(for: URL(fileURLWithPath: path))
     }
 
-    func attempt(_ action: () throws -> Void) {
+    func attempt(_ action: () throws -> Void) rethrows {
         do {
             try action()
         } catch {
@@ -60,7 +60,7 @@ public class FolderManager {
         }
     }
 
-    func attemptReturning<T>(_ action: () throws -> T?) -> T? {
+    func attemptReturning<T>(_ action: () throws -> T?) rethrows -> T? {
         do {
             return try action()
         } catch {

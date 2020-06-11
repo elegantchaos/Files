@@ -36,6 +36,8 @@ public struct Folder: Item {
     public let ref: FolderManager.Ref
     public var isFile: Bool { false }
     
+    public var lazy: LazyFolder { LazyFolder(wrapped: self) }
+
     public func file(_ name: ItemName) -> File {
         let url = ref.url.appending(name)
         return ref.manager.file(for: url)
@@ -68,8 +70,8 @@ public struct Folder: Item {
         return ref.manager.folder(for: url)
     }
 
-    public func create() {
-        ref.manager.attempt() {
+    public func create() throws {
+        try ref.manager.attempt() {
             try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
         }
     }
@@ -78,14 +80,14 @@ public struct Folder: Item {
         return ref.manager.folder(for: url)
     }
 
-    public func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item) -> Void) {
-        forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
+    public func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item) -> Void) throws {
+        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
     }
 
-    public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Folder?) -> Void) {
+    public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Folder?) -> Void) throws {
         var files: [File] = []
         var folders: [Folder] = []
-        ref.manager.attempt {
+        try ref.manager.attempt {
             let manager = ref.manager
             let contents = try manager.manager.contentsOfDirectory(at: ref.url, includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey], options: [])
             for item in contents {
@@ -100,12 +102,12 @@ public struct Folder: Item {
             }
         }
 
-        func processFolders() {
+        func processFolders() throws {
             if recursive {
-                folders.forEach() { folder in
+                try folders.forEach() { folder in
                     let nested = parallel?.folder(name)
-                    nested?.create()
-                    folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
+                    try nested?.create()
+                    try folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
                 }
             }
             
@@ -120,10 +122,10 @@ public struct Folder: Item {
         switch order {
         case .filesFirst:
             processFiles()
-            processFolders()
+            try processFolders()
             
         case .foldersFirst:
-            processFolders()
+            try processFolders()
             processFiles()
         }
     }
