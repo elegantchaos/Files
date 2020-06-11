@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct ThrowingRef: LocationRef {
+public struct ThrowingReference: LocationRef {
     public typealias Manager = ThrowingManager
 
     public let url: URL
@@ -18,9 +18,10 @@ public struct ThrowingRef: LocationRef {
 
 public struct ThrowingManager: FolderManager {
     public let manager: FileManager
-    public typealias FileType = File
-    public typealias FolderType = Folder
-    public typealias ReferenceType = ThrowingRef
+    public typealias FileType = ThrowingFile
+    public typealias FolderType = ThrowingFolder
+    public typealias ReferenceType = ThrowingReference
+    public typealias WibbleType = ThrowingCommon
 }
 
 public extension FileManager {

@@ -6,13 +6,13 @@
 import Foundation
 
 
-public struct File: ThrowingItem {
+public struct ThrowingFile: ThrowingItem {
     public typealias Manager = ThrowingManager
-    public let ref: ThrowingRef
+    public let ref: ThrowingReference
     public var isFile: Bool { true }
     public var asText: String? { try? String(contentsOf: ref.url, encoding: .utf8) }
     
-    public init(ref: ThrowingRef) {
+    public init(ref: ThrowingReference) {
         self.ref = ref
     }
     

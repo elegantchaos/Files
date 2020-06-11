@@ -5,22 +5,16 @@
 
 import Foundation
 
-
-protocol QuietCommon: ItemCommon {
+protocol NonThrowingCommon: ItemCommon {
     func delete()
     func rename(as newName: ItemName, replacing: Bool) -> Self?
-    @discardableResult func copy(to folder: QuietFolder, as newName: ItemName?, replacing: Bool) -> Self?
+    @discardableResult func copy(to folder: NonThrowingFolder, as newName: ItemName?, replacing: Bool) -> Self?
 }
 
-protocol QuietItem: Item, QuietCommon {
+protocol NonThrowingItem: Item, NonThrowingCommon {
 }
 
-extension QuietItem where Manager == QuietLocationManager {
-    init?(ref: Manager.ReferenceType?) {
-        guard let ref = ref else { return nil }
-        self.init(ref: ref)
-    }
-    
+extension NonThrowingItem where Manager == NonThrowingManager {
     func rename(as newName: ItemName, replacing: Bool = false) -> Self? {
         let renamed = ref.manager.attemptReturning {
             return try ref.rename(as: newName, replacing: replacing)
@@ -35,14 +29,14 @@ extension QuietItem where Manager == QuietLocationManager {
         }
     }
 
-    @discardableResult func copy(to folder: QuietFolder, as newName: ItemName?, replacing: Bool = false) -> Self? {
+    @discardableResult func copy(to folder: NonThrowingFolder, as newName: ItemName?, replacing: Bool = false) -> Self? {
         let copied = ref.manager.attemptReturning() {
             return try ref.copy(to: folder.ref, as: newName)
         }
         return Self(ref: copied)
     }
 
-    @discardableResult func copy(to folder: QuietFolder, as newName: String? = nil, replacing: Bool = false) -> Self? {
+    @discardableResult func copy(to folder: NonThrowingFolder, as newName: String? = nil, replacing: Bool = false) -> Self? {
         let name = newName == nil ? nil : ItemName(newName!)
         return copy(to: folder, as: name, replacing: replacing)
     }

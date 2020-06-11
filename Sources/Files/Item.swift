@@ -10,18 +10,24 @@ public protocol ItemCommon: CustomStringConvertible {
     var isFile: Bool { get }
     var isHidden: Bool { get }
     var name: ItemName { get }
+    var path: String { get }
+    var exists: Bool { get }
 }
 
 public protocol Item: ItemCommon where Manager: FolderManager {
     associatedtype Manager
     var ref: Manager.ReferenceType { get }
     init(ref: Manager.ReferenceType)
-    var path: String { get }
-    var exists: Bool { get }
 }
 
 public extension Item {
+    init?(ref: Manager.ReferenceType?) {
+        guard let ref = ref else { return nil }
+        self.init(ref: ref)
+    }
+
     var url: URL { ref.url }
+    
     var path: String { ref.url.path }
 
     var isHidden: Bool {

@@ -5,11 +5,11 @@
 
 import Foundation
 
-struct QuietRef: LocationRef {
-    typealias Manager = QuietLocationManager
+struct NonThrowingReference: LocationRef {
+    typealias Manager = NonThrowingManager
 
     let url: URL
-    let manager: QuietLocationManager
+    let manager: NonThrowingManager
     
     init(for url: URL, manager: Manager) {
         self.url = url
@@ -17,11 +17,11 @@ struct QuietRef: LocationRef {
     }
 }
 
-struct QuietLocationManager: FolderManager {
-    typealias FileType = QuietFile
-    typealias FolderType = QuietFolder
-    typealias ReferenceType = QuietRef
-    typealias ItemType = QuietCommon
+struct NonThrowingManager: FolderManager {
+    typealias FileType = NonThrowingFile
+    typealias FolderType = NonThrowingFolder
+    typealias ReferenceType = NonThrowingReference
+    typealias WibbleType = NonThrowingCommon
     
     public typealias LogHandler = (String) -> Void
     public typealias ErrorHandler = (Error) -> Void
@@ -64,5 +64,5 @@ struct QuietLocationManager: FolderManager {
 
 
 extension FileManager {
-    var quiet: QuietLocationManager { QuietLocationManager(manager: self) }
+    var quiet: NonThrowingManager { NonThrowingManager(manager: self) }
 }

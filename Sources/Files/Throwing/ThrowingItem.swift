@@ -8,7 +8,7 @@ import Foundation
 public protocol ThrowingCommon: ItemCommon {
     func delete() throws
     @discardableResult func rename(as: ItemName, replacing: Bool) throws -> Self
-    @discardableResult func copy(to: Folder, as: ItemName?, replacing: Bool) throws -> Self
+    @discardableResult func copy(to: ThrowingFolder, as: ItemName?, replacing: Bool) throws -> Self
 }
 
 public protocol ThrowingItem: Item, ThrowingCommon {

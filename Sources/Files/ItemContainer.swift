@@ -110,11 +110,12 @@ public extension ItemContainer {
             }
             
             let filtered = folders.filter({ return filter.passes($0) })
-            try filtered.forEach({ try block($0 as! Manager.ItemType, parallel) })
+            try filtered.forEach({ try block($0, parallel) })
         }
-        
+
+
         func processFiles() throws {
-            try files.forEach({ try block($0 as! Manager.ItemType, parallel) })
+            try files.forEach({ try block($0, parallel) })
         }
         
         switch order {
@@ -127,4 +128,17 @@ public extension ItemContainer {
             try processFiles()
         }
     }
+
+    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.WibbleType, FolderType?) throws -> Void) throws {
+        try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item as! Manager.WibbleType, parallel)
+        }
+    }
+
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.WibbleType) throws -> Void) throws {
+        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item)
+        }
+    }
+
 }

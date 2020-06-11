@@ -169,7 +169,7 @@ final class FolderManagerTests: XCTestCase {
     
     func testQuietFailure() {
         var receivedError: NSError? = nil
-        let fm = QuietLocationManager(errorHandler: { error in receivedError = error as NSError })
+        let fm = NonThrowingManager(errorHandler: { error in receivedError = error as NSError })
         _ = fm.temporary.file("non-existent").rename(as: "test")
         XCTAssertEqual(receivedError?.code, 4)
         XCTAssertEqual(receivedError?.domain, "NSCocoaErrorDomain")
@@ -180,8 +180,8 @@ final class FolderManagerTests: XCTestCase {
         let root = makeTestStructure()
         let folder = FileManager.default.locations.folder(for: root)
         var names = ["folder2", "folder3"]
-        try! folder.forEach() { (item: ThrowingCommon) in
-            XCTAssertTrue(item is Folder)
+        try! folder.forEach() { item in
+            XCTAssertTrue(item is ThrowingFolder)
             let index = names.firstIndex(of: item.name.name)
             XCTAssertNotNil(index)
             names.remove(at: index!)
@@ -190,13 +190,28 @@ final class FolderManagerTests: XCTestCase {
         }
         XCTAssertEqual(names.count, 0)
     }
-    
+
+    func testForEachWibble() {
+        let root = makeTestStructure()
+        let folder = FileManager.default.locations.folder(for: root)
+        var names = ["folder2", "folder3"]
+        try! folder.forEach(inParallelWith: nil) { item, folder in
+            XCTAssertTrue(item is ThrowingFolder)
+            let index = names.firstIndex(of: item.name.name)
+            XCTAssertNotNil(index)
+            names.remove(at: index!)
+            let renamed = try item.rename(as: "blah", replacing: false)
+            try renamed.delete()
+        }
+        XCTAssertEqual(names.count, 0)
+    }
+
     func testQuietForEach() {
         let root = makeTestStructure()
         let folder = FileManager.default.quiet.folder(for: root)
         var names = ["folder2", "folder3"]
         try! folder.forEach() { item in
-            XCTAssertTrue(item is QuietFolder)
+            XCTAssertTrue(item is NonThrowingFolder)
             let index = names.firstIndex(of: item.name.name)
             XCTAssertNotNil(index)
             names.remove(at: index!)
@@ -209,15 +224,15 @@ final class FolderManagerTests: XCTestCase {
     
     func testTypePropogation() {
         let temp = FileManager.default.locations.temporary
-        XCTAssertTrue(temp is Folder)
-        XCTAssertTrue(temp.file("test") is File)
-        XCTAssertTrue(temp.folder("test") is Folder)
-        XCTAssertTrue(temp.up is Folder)
+        XCTAssertTrue(temp is ThrowingFolder)
+        XCTAssertTrue(temp.file("test") is ThrowingFile)
+        XCTAssertTrue(temp.folder("test") is ThrowingFolder)
+        XCTAssertTrue(temp.up is ThrowingFolder)
         
         let quiet = FileManager.default.quiet.temporary
-        XCTAssertTrue(quiet is QuietFolder)
-        XCTAssertTrue(quiet.file("test") is QuietFile)
-        XCTAssertTrue(quiet.folder("test") is QuietFolder)
-        XCTAssertTrue(quiet.up is QuietFolder)
+        XCTAssertTrue(quiet is NonThrowingFolder)
+        XCTAssertTrue(quiet.file("test") is NonThrowingFile)
+        XCTAssertTrue(quiet.folder("test") is NonThrowingFolder)
+        XCTAssertTrue(quiet.up is NonThrowingFolder)
     }
 }

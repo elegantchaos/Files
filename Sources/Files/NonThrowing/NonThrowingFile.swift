@@ -5,8 +5,8 @@
 
 import Foundation
 
-struct QuietFile: QuietItem {
-    let ref: QuietRef
+struct NonThrowingFile: NonThrowingItem {
+    let ref: NonThrowingReference
     var isFile: Bool { true }
-    typealias Manager = QuietLocationManager
+    typealias Manager = NonThrowingManager
 }
