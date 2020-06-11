@@ -8,5 +8,5 @@ import Foundation
 struct QuietFile: QuietItem {
     let ref: QuietRef
     var isFile: Bool { true }
-    typealias Manager = QuietLocations
+    typealias Manager = QuietLocationManager
 }

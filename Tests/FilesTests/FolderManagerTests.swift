@@ -123,8 +123,8 @@ final class FolderManagerTests: XCTestCase {
     
     func testQuietFailure() {
         var receivedError: NSError? = nil
-        let fm = OldFolderManager(errorHandler: { error in receivedError = error as NSError })
-        _ = fm.temporary.quiet.file("non-existent").rename(as: "test")
+        let fm = QuietLocationManager(errorHandler: { error in receivedError = error as NSError })
+        _ = fm.temporary.file("non-existent").rename(as: "test")
         XCTAssertEqual(receivedError?.code, 4)
         XCTAssertEqual(receivedError?.domain, "NSCocoaErrorDomain")
     }
@@ -138,7 +138,7 @@ final class FolderManagerTests: XCTestCase {
         try? FileManager.default.createDirectory(at: f3, withIntermediateDirectories: true, attributes: nil)
         return f1
     }
-//    
+//
 //    func testForEach() {
 //        let root = makeTestStructure()
 //        let folder = FileManager.default.locations.folder(for: root)

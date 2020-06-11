@@ -8,7 +8,7 @@ import Foundation
 struct QuietFolder: QuietContainer {
     let ref: QuietRef
     var isFile: Bool { false }
-    typealias Manager = QuietLocations
+    typealias Manager = QuietLocationManager
 
     func create() {
         ref.manager.attempt {

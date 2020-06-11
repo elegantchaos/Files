@@ -8,7 +8,7 @@ import Foundation
 protocol QuietItem: Item {
 }
 
-extension QuietItem where Manager == QuietLocations {
+extension QuietItem where Manager == QuietLocationManager {
     func rename(as newName: ItemName, replacing: Bool = false) -> Self {
         do {
             let source = ref.url
