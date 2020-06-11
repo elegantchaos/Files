@@ -5,13 +5,13 @@
 
 import Foundation
 
-public protocol QuietItem: ItemBase {
+public protocol QuietItem: Item {
     associatedtype T
     init(wrapped: T)
     var wrapped: T { get }
 }
 
-public extension QuietItem where T: Item {
+public extension QuietItem where T: ThrowingItem {
     var ref: FolderManager.Ref { wrapped.ref }
     var isFile: Bool { wrapped.isFile }
     func sameType(with url: URL) -> Self {
@@ -60,7 +60,7 @@ public struct QuietFile: QuietItem {
 }
 
 public struct QuietFolder: QuietItem, ItemContainer {
-    public func item(_ name: ItemName) -> ItemBase? {
+    public func item(_ name: ItemName) -> Item? {
         let item = wrapped.item(name)
         if let file = item as? File {
             return QuietFile(wrapped: file)

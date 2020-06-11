@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct Folder: Item {
+public struct Folder: ThrowingItem {
  
     
     public let ref: FolderManager.Ref
@@ -78,7 +78,7 @@ extension Folder: ItemContainer {
         return ref.manager.folder(for: url)
     }
 
-    public func item(_ name: ItemName) -> ItemBase? {
+    public func item(_ name: ItemName) -> Item? {
         let url = ref.url.appending(name)
         var isDirectory: ObjCBool = false
         guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }

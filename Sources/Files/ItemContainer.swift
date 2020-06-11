@@ -11,10 +11,10 @@ public indirect enum Filter {
      case folders
      case visible
      case hidden
-     case custom((ItemBase) -> Bool)
+     case custom((Item) -> Bool)
      case compound(Filter, Filter)
      
-     func passes(_ item: ItemBase) -> Bool {
+     func passes(_ item: Item) -> Bool {
          switch self {
          case .none: return true
          case .files: return item.isFile
@@ -32,7 +32,7 @@ public enum Order {
     case foldersFirst
 }
 
-public protocol ItemContainer {
+public protocol ItemContainer: Item {
     associatedtype FileType
     associatedtype FolderType
     
@@ -40,16 +40,16 @@ public protocol ItemContainer {
     var up: FolderType { get }
     func file(_ name: ItemName) -> FileType
     func folder(_ name: ItemName) -> FolderType
-    func item(_ name: ItemName) -> ItemBase?
-    func item(_ name: String) -> ItemBase?
+    func item(_ name: ItemName) -> Item?
+    func item(_ name: String) -> Item?
     func file(_ name: String) -> FileType
     func folder(_ name: String) -> FolderType
     func folder(for url: URL) -> FolderType
     func file(for url: URL) -> FileType
-    func forEach(inParallelWith parallel: Self?, order: Order, filter: Filter, recursive: Bool, do block: (ItemBase, Self?) -> Void) throws
+    func forEach(inParallelWith parallel: Self?, order: Order, filter: Filter, recursive: Bool, do block: (Item, Self?) -> Void) throws
 }
 
-public extension ItemContainer where FolderType: ItemContainer, FileType: ItemBase, FolderType: ItemBase, FolderType == Self {
+public extension ItemContainer where FolderType: ItemContainer, FileType: Item, FolderType == Self {
     var up: FolderType {
         return folder(for: ref.url.deletingLastPathComponent())
     }
@@ -62,14 +62,14 @@ public extension ItemContainer where FolderType: ItemContainer, FileType: ItemBa
         return folder(for: ref.url)
     }
 
-    func item(_ name: ItemName) -> ItemBase? {
+    func item(_ name: ItemName) -> Item? {
         let url = ref.url.appending(name)
         var isDirectory: ObjCBool = false
         guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
         return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
     }
 
-    func item(_ name: String) -> ItemBase? {
+    func item(_ name: String) -> Item? {
         item(ItemName(name))
     }
     
@@ -85,11 +85,11 @@ public extension ItemContainer where FolderType: ItemContainer, FileType: ItemBa
         return folder(for: ref.url.appendingPathComponents(components))
     }
 
-    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemBase) -> Void) throws {
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item) -> Void) throws {
         try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in block(item) }
     }
 
-    func forEach(inParallelWith parallel: Self?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemBase, Self?) -> Void) throws {
+    func forEach(inParallelWith parallel: Self?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Self?) -> Void) throws {
          var files: [FileType] = []
          var folders: [FolderType] = []
          let manager = ref.manager

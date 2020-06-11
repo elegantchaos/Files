@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct File: Item {
+public struct File: ThrowingItem {
     public let ref: FolderManager.Ref
     public var isFile: Bool { true }
     
