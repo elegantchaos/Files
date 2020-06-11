@@ -4,6 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "Files",
+    platforms: [
+        .macOS(.v10_13)
+    ],
     products: [
         .library(
             name: "Files",
@@ -13,6 +16,7 @@ let package = Package(
         targets: ["FilesKit"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/elegantchaos/XCTestExtensions", from: "1.1.2")
     ],
     targets: [
         .target(
@@ -23,6 +27,6 @@ let package = Package(
             dependencies: ["Files"]),
         .testTarget(
             name: "FilesTests",
-            dependencies: ["Files"]),
+            dependencies: ["Files", "XCTestExtensions"]),
     ]
 )

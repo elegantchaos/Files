@@ -69,10 +69,8 @@ public struct Folder: Item {
     }
 
     public func create() {
-        do {
+        ref.manager.attempt() {
             try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
-        } catch {
-            print(error)
         }
     }
 
@@ -87,7 +85,7 @@ public struct Folder: Item {
     public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Item, Folder?) -> Void) {
         var files: [File] = []
         var folders: [Folder] = []
-        do {
+        ref.manager.attempt {
             let manager = ref.manager
             let contents = try manager.manager.contentsOfDirectory(at: ref.url, includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey], options: [])
             for item in contents {
@@ -100,8 +98,6 @@ public struct Folder: Item {
                     if filter.passes(item) { files.append(item) }
                 }
             }
-        } catch {
-            
         }
 
         func processFolders() {

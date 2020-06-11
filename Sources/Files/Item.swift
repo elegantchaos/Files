@@ -70,14 +70,16 @@ public extension Item {
     @discardableResult func rename(as newName: ItemName, replacing: Bool = false) -> Self {
         let source = ref.url
         let dest = ref.url.deletingLastPathComponent().appending(newName)
-        let renamed = ref.manager.attemptReturning() {
+        let renamed: Self? = ref.manager.attemptReturning() {
             if replacing {
                 try? ref.manager.manager.removeItem(at: dest)
             }
             
             try ref.manager.manager.moveItem(at: source, to: dest)
             return sameType(with: dest)
-        } ?? self
+        }
+            
+            return renamed ?? self
     }
 
     @discardableResult func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) -> Self {

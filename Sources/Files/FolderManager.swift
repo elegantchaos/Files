@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct FolderManager {
+public class FolderManager {
     public struct Ref {
         let manager: FolderManager
         let url: URL
@@ -16,14 +16,26 @@ public struct FolderManager {
         }
     }
 
+    public typealias LogHandler = (String) -> Void
+    public typealias ErrorHandler = (Error) -> Void
+    
     let manager: FileManager
+    var logHandler: LogHandler
+    var errorHandler: ErrorHandler
     
     public static var shared = FolderManager(manager: FileManager.default)
 
     public var desktop: Folder { return Folder(ref: Ref(url: manager.desktopDirectory(), manager: self)) }
     public var current: Folder { return Folder(ref: Ref(url: manager.workingDirectory(), manager: self)) }
     public var home: Folder { return Folder(ref: Ref(url: manager.homeDirectory(), manager: self)) }
-
+    public var temporary: Folder { return Folder(ref: Ref(url: manager.temporaryDirectory(), manager: self)) }
+    
+    init(manager: FileManager, fileManager: FileManager = .default, logHandler: LogHandler? = nil, errorHandler: ErrorHandler? = nil) {
+        self.manager = FileManager.default
+        self.logHandler = logHandler ?? { string in print(string) }
+        self.errorHandler = errorHandler ?? { error in print(error) }
+    }
+    
     public func ref(for url: URL) -> Ref {
         Ref(url: url, manager: self)
     }
@@ -58,8 +70,10 @@ public struct FolderManager {
     }
 
     func log(_ string: String) {
+        logHandler(string)
     }
     
     func log(_ error: Error) {
+        errorHandler(error)
     }
 }
