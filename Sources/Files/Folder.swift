@@ -20,50 +20,6 @@ public struct Folder: ThrowingItem {
     public func sameType(with url: URL) -> Folder {
         return ref.manager.folder(for: url)
     }
-//
-//    public func forEach(inParallelWith parallel: Folder?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ItemBase, Folder?) -> Void) throws {
-//        var files: [File] = []
-//        var folders: [Folder] = []
-//        let manager = ref.manager
-//        let contents = try manager.manager.contentsOfDirectory(at: ref.url, includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey], options: [])
-//        for item in contents {
-//            let values = try item.resourceValues(forKeys: [.isDirectoryKey])
-//            if values.isDirectory ?? false {
-//                let item = manager.folder(for: item)
-//                folders.append(item)
-//            } else {
-//                let item = manager.file(for: item)
-//                if filter.passes(item) { files.append(item) }
-//            }
-//        }
-//
-//        func processFolders() throws {
-//            if recursive {
-//                try folders.forEach() { folder in
-//                    let nested = parallel?.folder(name)
-//                    try nested?.create()
-//                    try folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
-//                }
-//            }
-//
-//            let filtered = folders.filter({ filter.passes($0) })
-//            filtered.forEach({ block($0, parallel) })
-//        }
-//
-//        func processFiles() {
-//            files.forEach({ block($0, parallel) })
-//        }
-//
-//        switch order {
-//        case .filesFirst:
-//            processFiles()
-//            try processFolders()
-//
-//        case .foldersFirst:
-//            try processFolders()
-//            processFiles()
-//        }
-//    }
 }
 
 extension Folder: ItemContainer {
