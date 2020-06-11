@@ -7,10 +7,9 @@ import Files
 
 #if canImport(AppKit)
 
-import Files
 import AppKit
 
-extension ThrowingItem {
+extension Item {
     public func reveal() {
         NSWorkspace.shared.open(url)
     }
@@ -18,7 +17,7 @@ extension ThrowingItem {
 
 #else
 
-extension FolderItem {
+extension Item {
     public func reveal() {
         // TODO...
     }
