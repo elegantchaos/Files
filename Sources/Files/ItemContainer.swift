@@ -43,7 +43,7 @@ public protocol ItemContainer: Item {
     func folder(_ name: String) -> FolderType
     func item(_ name: ItemName) -> ItemCommon?
     func item(_ name: String) -> ItemCommon?
-    func forEach(inParallelWith parallel: FolderType?, order: Order, filter: Filter, recursive: Bool, do block: (ItemCommon, FolderType?) throws -> Void) throws
+    func _forEach(inParallelWith parallel: FolderType?, order: Order, filter: Filter, recursive: Bool, do block: (ItemCommon, FolderType?) throws -> Void) throws
 }
 
 public extension ItemContainer {
@@ -81,13 +81,8 @@ public extension ItemContainer {
     func item(_ name: String) -> ItemCommon? {
         item(ItemName(name))
     }
-    
-    
-    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType) throws -> Void) throws {
-        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) { item, _ in try block(item) }
-    }
-    
-    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType, FolderType?) throws -> Void) throws {
+        
+    func _forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType, FolderType?) throws -> Void) throws {
         var files: [FileType] = []
         var folders: [FolderType] = []
         let manager = ref.manager
@@ -115,7 +110,7 @@ public extension ItemContainer {
                         nested = nil
                     }
                     
-                    try folder.forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
+                    try folder._forEach(inParallelWith: nested, order: order, filter: filter, recursive: recursive, do: block)
                 }
             }
             

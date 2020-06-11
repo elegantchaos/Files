@@ -148,6 +148,7 @@ final class FolderManagerTests: XCTestCase {
             let index = names.firstIndex(of: item.name.name)
             XCTAssertNotNil(index)
             names.remove(at: index!)
+            try item.delete()
         }
         XCTAssertEqual(names.count, 0)
     }

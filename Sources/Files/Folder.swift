@@ -5,6 +5,17 @@
 
 import Foundation
 
+protocol ThrowingCommon: ItemCommon {
+    func delete() throws
+}
+
+extension File: ThrowingCommon {
+}
+
+extension Folder: ThrowingCommon {
+    
+}
+
 public struct Folder: ItemContainer, ThrowingItem {
     public typealias Manager = ThrowingManager
     public let ref: ThrowingRef
@@ -55,4 +66,18 @@ public struct Folder: ItemContainer, ThrowingItem {
         try ref.manager.manager.moveItem(at: source, to: dest)
         return sameType(with: dest)
     }
+    
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ThrowingCommon) throws -> Void) throws {
+        try _forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item as! ThrowingCommon)
+        }
+    }
+    
+    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ThrowingCommon, FolderType?) throws -> Void) throws {
+        try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item as! ThrowingCommon, parallel)
+        }
+    }
+    
+
 }

@@ -5,6 +5,17 @@
 
 import Foundation
 
+protocol QuietCommon: ItemCommon {
+    func delete()
+}
+
+extension QuietFile: QuietCommon {
+}
+
+extension QuietFolder: QuietCommon {
+    
+}
+
 struct QuietFolder: ItemContainer, QuietItem {
     let ref: QuietRef
     var isFile: Bool { false }
@@ -15,5 +26,16 @@ struct QuietFolder: ItemContainer, QuietItem {
             try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
         }
     }
-
+    
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (QuietCommon) throws -> Void) throws {
+        try _forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item as! QuietCommon)
+        }
+    }
+    
+    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (QuietCommon, FolderType?) throws -> Void) throws {
+        try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
+            item, _ in try block(item as! QuietCommon, parallel)
+        }
+    }
 }
