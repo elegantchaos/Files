@@ -71,4 +71,14 @@ public extension LocationRef {
         return Self(for: dest, manager: manager)
     }
 
+    func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
+        let dest = url.deletingLastPathComponent().appending(newName)
+        if replacing {
+            try? manager.manager.removeItem(at: dest)
+        }
+
+        try manager.manager.moveItem(at: url, to: dest)
+        return Self(for: dest, manager: manager)
+    }
+
 }

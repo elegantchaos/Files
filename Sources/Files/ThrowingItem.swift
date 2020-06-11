@@ -30,14 +30,8 @@ public extension ThrowingItem {
     }
 
     @discardableResult func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
-        let source = ref.url
-        let dest = ref.url.deletingLastPathComponent().appending(newName)
-        if replacing {
-            try? ref.manager.manager.removeItem(at: dest)
-        }
-        
-        try ref.manager.manager.moveItem(at: source, to: dest)
-        return sameType(with: dest)
+        let renamed = try ref.rename(as: newName, replacing: replacing)
+        return Self(ref: renamed)
     }
 
     @discardableResult func rename(as newName: String, replacing: Bool = false) throws -> Self {

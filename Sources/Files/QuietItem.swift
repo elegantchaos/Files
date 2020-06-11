@@ -16,20 +16,17 @@ protocol QuietItem: Item, QuietCommon {
 }
 
 extension QuietItem where Manager == QuietLocationManager {
+    init?(ref: Manager.ReferenceType?) {
+        guard let ref = ref else { return nil }
+        self.init(ref: ref)
+    }
+    
     func rename(as newName: ItemName, replacing: Bool = false) -> Self? {
-        do {
-            let source = ref.url
-            let dest = ref.url.deletingLastPathComponent().appending(newName)
-            if replacing {
-                try? ref.manager.manager.removeItem(at: dest)
-            }
-
-            try ref.manager.manager.moveItem(at: source, to: dest)
-            return sameType(with: dest)
-        } catch {
-            ref.manager.log(error)
-            return nil
+        let renamed = ref.manager.attemptReturning {
+            return try ref.rename(as: newName, replacing: replacing)
         }
+    
+        return Self(ref: renamed)
     }
     
     func delete() {
@@ -39,13 +36,10 @@ extension QuietItem where Manager == QuietLocationManager {
     }
 
     @discardableResult func copy(to folder: QuietFolder, as newName: ItemName?, replacing: Bool = false) -> Self? {
-        do {
-            let copiedRef = try ref.copy(to: folder.ref, as: newName)
-            return Self(ref: copiedRef)
-        } catch {
-            ref.manager.log(error)
-            return nil
+        let copied = ref.manager.attemptReturning() {
+            return try ref.copy(to: folder.ref, as: newName)
         }
+        return Self(ref: copied)
     }
 
     @discardableResult func copy(to folder: QuietFolder, as newName: String? = nil, replacing: Bool = false) -> Self? {
