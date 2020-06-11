@@ -123,6 +123,42 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertEqual(receivedError?.domain, "NSCocoaErrorDomain")
     }
     
+    func makeTestStructure() -> URL {
+        let f1 = temporaryFile(named: "root")
+        try? FileManager.default.createDirectory(at: f1, withIntermediateDirectories: true, attributes: nil)
+        let f2 = f1.appendingPathComponent("folder2")
+        let f3 = f1.appendingPathComponent("folder3")
+        try? FileManager.default.createDirectory(at: f2, withIntermediateDirectories: true, attributes: nil)
+        try? FileManager.default.createDirectory(at: f3, withIntermediateDirectories: true, attributes: nil)
+        return f1
+    }
+    
+    func testForEach() {
+        let root = makeTestStructure()
+        let folder = FolderManager.shared.folder(for: root)
+        var names = ["folder2", "folder3"]
+        try! folder.forEach() { item in
+            XCTAssertTrue(item is Folder)
+            let index = names.firstIndex(of: item.name.name)
+            XCTAssertNotNil(index)
+            names.remove(at: index!)
+        }
+        XCTAssertEqual(names.count, 0)
+    }
+
+    func testQuietForEach() {
+        let root = makeTestStructure()
+        let folder = FolderManager.shared.folder(for: root).quiet
+        var names = ["folder2", "folder3"]
+        try! folder.forEach() { item in
+            XCTAssertTrue(item is QuietFolder)
+            let index = names.firstIndex(of: item.name.name)
+            XCTAssertNotNil(index)
+            names.remove(at: index!)
+        }
+        XCTAssertEqual(names.count, 0)
+    }
+
     func testTypePropogation() {
         let temp = FolderManager.shared.temporary
         XCTAssertTrue(temp is Folder)
