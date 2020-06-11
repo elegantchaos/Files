@@ -29,6 +29,6 @@ public struct File: ThrowingItem {
     public var quiet: QuietFile { QuietFile(wrapped: self) }
 }
 
-extension File: CustomStringConvertible {
+extension NuFile: CustomStringConvertible {
     public var description: String { "📄: \"\(name.fullName)\" (\(ref.url.path))" }
 }

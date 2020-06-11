@@ -14,33 +14,59 @@ final class NuManagerTests: XCTestCase {
         print(temp)
     }
 
-      func testFolder() {
+    func testFolder() {
         let fm = FileManager.default.locations
-          let h = fm.home
-          
-          XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
-          XCTAssertTrue(h.exists)
-          XCTAssertFalse(h.isFile)
-          XCTAssertFalse(h.isHidden)
-          
-          let url = temporaryFile()
-          let folder = fm.folder(for: url)
-          try! folder.create()
-          XCTAssertTrue(FileManager.default.fileExists(atURL: url))
-          
-          let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-          let renamed = try! folder.rename(as: "Test2")
-          XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-          XCTAssertFalse(folder.exists)
-          
-          XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-          XCTAssertTrue(renamed.exists)
-          try! renamed.delete()
-          
-          XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-          
-      }
+        let h = fm.home
+        
+        XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
+        XCTAssertTrue(h.exists)
+        XCTAssertFalse(h.isFile)
+        XCTAssertFalse(h.isHidden)
+        
+        let url = temporaryFile()
+        let folder = fm.folder(for: url)
+        try! folder.create()
+        XCTAssertTrue(FileManager.default.fileExists(atURL: url))
+        
+        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+        let renamed = try! folder.rename(as: "Test2")
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+        XCTAssertFalse(folder.exists)
+        
+        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+        XCTAssertTrue(renamed.exists)
+        try! renamed.delete()
+        
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+        
+    }
     
+    func testQuietFolder() {
+      let fm = FileManager.default.quiet
+        let h = fm.home
+        
+        XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
+        XCTAssertTrue(h.exists)
+        XCTAssertFalse(h.isFile)
+        XCTAssertFalse(h.isHidden)
+        
+        let url = temporaryFile()
+        let folder = fm.folder(for: url)
+        folder.create()
+        XCTAssertTrue(FileManager.default.fileExists(atURL: url))
+        
+        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+        let renamed = folder.rename(as: "Test2")
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+        XCTAssertFalse(folder.exists)
+        
+        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+        XCTAssertTrue(renamed.exists)
+        renamed.delete()
+        
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+        
+    }
 
     func testFile() {
         let fm = FileManager.default.locations
