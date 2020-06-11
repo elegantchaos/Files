@@ -21,7 +21,7 @@ struct NonThrowingManager: FolderManager {
     typealias FileType = NonThrowingFile
     typealias FolderType = NonThrowingFolder
     typealias ReferenceType = NonThrowingReference
-    typealias WibbleType = NonThrowingCommon
+    typealias ItemType = NonThrowingCommon
     
     public typealias LogHandler = (String) -> Void
     public typealias ErrorHandler = (Error) -> Void

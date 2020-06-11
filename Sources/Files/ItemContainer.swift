@@ -129,13 +129,13 @@ public extension ItemContainer {
         }
     }
 
-    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.WibbleType, FolderType?) throws -> Void) throws {
+    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType, FolderType?) throws -> Void) throws {
         try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
-            item, _ in try block(item as! Manager.WibbleType, parallel)
+            item, _ in try block(item as! Manager.ItemType, parallel)
         }
     }
 
-    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.WibbleType) throws -> Void) throws {
+    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (Manager.ItemType) throws -> Void) throws {
         try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
             item, _ in try block(item)
         }

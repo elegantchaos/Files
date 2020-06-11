@@ -15,16 +15,4 @@ struct NonThrowingFolder: ItemContainer, NonThrowingItem {
             try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
         }
     }
-//    
-//    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (NonThrowingCommon) throws -> Void) throws {
-//        try _forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
-//            item, _ in try block(item as! NonThrowingCommon)
-//        }
-//    }
-//    
-//    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (NonThrowingCommon, FolderType?) throws -> Void) throws {
-//        try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
-//            item, _ in try block(item as! NonThrowingCommon, parallel)
-//        }
-//    }
 }

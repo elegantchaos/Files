@@ -17,18 +17,4 @@ public struct ThrowingFolder: ItemContainer, ThrowingItem {
     public func create() throws {
         try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
     }
-    
-//    func forEach(order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ThrowingCommon) throws -> Void) throws {
-//        try forEach(inParallelWith: nil, order: order, filter: filter, recursive: recursive) {
-//            item, _ in try block(item)
-//        }
-//    }
-//    
-//    func forEach(inParallelWith parallel: FolderType?, order: Order = .filesFirst, filter: Filter = .none, recursive: Bool = true, do block: (ThrowingCommon, FolderType?) throws -> Void) throws {
-//        try _forEach(inParallelWith: parallel, order: order, filter: filter, recursive: recursive) {
-//            item, _ in try block(item as! ThrowingCommon, parallel)
-//        }
-//    }
-
-
 }

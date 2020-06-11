@@ -10,11 +10,11 @@ public protocol FolderManager where FileType: Item, FolderType: ItemContainer, R
     associatedtype FileType
     associatedtype FolderType
     associatedtype ReferenceType
-    associatedtype WibbleType
+    associatedtype ItemType
     
     func folder(for url: URL) -> FolderType
     func file(for url: URL) -> FileType
-    func item(for url: URL) -> ItemCommon
+    func item(for url: URL) -> ItemType
 }
 
 public protocol LocationRef where Manager: FolderManager {
@@ -37,21 +37,12 @@ public extension FolderManager {
         return FileType(ref: ref(for: url))
     }
 
-    func item(for url: URL) -> ItemCommon {
+    func item(for url: URL) -> ItemType {
         var isDirectory: ObjCBool = false
         if manager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return folder(for: url)
+            return folder(for: url) as! ItemType
         } else {
-            return file(for: url)
-        }
-    }
-
-    func wibble(for url: URL) -> WibbleType {
-        var isDirectory: ObjCBool = false
-        if manager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return folder(for: url) as! WibbleType
-        } else {
-            return file(for: url) as! WibbleType
+            return file(for: url) as! ItemType
         }
     }
     

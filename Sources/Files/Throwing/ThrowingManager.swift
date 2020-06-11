@@ -21,7 +21,7 @@ public struct ThrowingManager: FolderManager {
     public typealias FileType = ThrowingFile
     public typealias FolderType = ThrowingFolder
     public typealias ReferenceType = ThrowingReference
-    public typealias WibbleType = ThrowingCommon
+    public typealias ItemType = ThrowingCommon
 }
 
 public extension FileManager {
