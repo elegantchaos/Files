@@ -32,6 +32,57 @@ public enum Order {
     case foldersFirst
 }
 
+
+public protocol NuItemContainer: NuItem {
+    typealias FileType = Manager.FileType
+    typealias FolderType = Manager.FolderType
+    var up: FolderType { get }
+    func file(_ name: ItemName) -> FileType
+    func folder(_ name: ItemName) -> FolderType
+    func file(_ name: String) -> FileType
+    func folder(_ name: String) -> FolderType
+    func item(_ name: ItemName) -> ItemCommon?
+    func item(_ name: String) -> ItemCommon?
+//    func forEach(inParallelWith parallel: Self?, order: Order, filter: Filter, recursive: Bool, do block: (ItemType, Self?) -> Void) throws
+}
+
+public extension NuItemContainer {
+    var up: FolderType {
+        ref.manager.folder(for: ref.url.deletingLastPathComponent())
+    }
+    
+    func file(_ name: ItemName) -> FileType {
+        return ref.manager.file(for: ref.url.appending(name))
+    }
+    
+     func file(_ name: String) -> FileType {
+         file(ItemName(name))
+     }
+
+    func folder(_ name: ItemName) -> FolderType {
+        return ref.manager.folder(for: ref.url.appending(name))
+    }
+    
+    func folder(_ name: String) -> FolderType {
+        folder(ItemName(name))
+    }
+    
+    func folder(_ components: [String]) -> FolderType {
+        return ref.manager.folder(for: ref.url.appendingPathComponents(components))
+    }
+
+    func item(_ name: ItemName) -> ItemCommon? {
+        let url = ref.url.appending(name)
+        var isDirectory: ObjCBool = false
+        guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
+        return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
+    }
+
+    func item(_ name: String) -> ItemCommon? {
+        item(ItemName(name))
+    }
+ }
+
 public protocol ItemContainer: Item {
     associatedtype FileType
     associatedtype FolderType

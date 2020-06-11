@@ -5,6 +5,16 @@
 
 import Foundation
 
+
+struct NuFile: ThrowingNuItem {
+    typealias Manager = ThrowingLocations
+    let ref: ThrowingRef
+    var isFile: Bool { true }
+
+    public var asText: String? { try? String(contentsOf: ref.url, encoding: .utf8) }
+    public func write(as text: String) { try? text.write(to: ref.url, atomically: true, encoding: .utf8) }
+}
+
 public struct File: ThrowingItem {
     public let ref: FolderManager.Ref
     public var isFile: Bool { true }

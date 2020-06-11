@@ -41,26 +41,28 @@ final class NuManagerTests: XCTestCase {
           
       }
     
-//
-//    func testFile() {
-//        let url = temporaryFile(named: "test", extension: "txt")
-//        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-//        try! "test".write(to: url, atomically: true, encoding: .utf8)
-//        let file = fm.file(for: url)
-//        XCTAssertTrue(file.exists)
-//        XCTAssertTrue(file.isFile)
-//        XCTAssertFalse(file.isHidden)
-//
-//        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-//        let renamed = try! file.rename(as: "Test2")
-//        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-//        XCTAssertFalse(file.exists)
-//
-//        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-//        XCTAssertTrue(renamed.exists)
-//        try! renamed.delete()
-//
-//        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-//    }
+
+    func testFile() {
+        let fm = FileManager.default.locations
+
+        let url = temporaryFile(named: "test", extension: "txt")
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+        try! "test".write(to: url, atomically: true, encoding: .utf8)
+        let file = fm.file(for: url)
+        XCTAssertTrue(file.exists)
+        XCTAssertTrue(file.isFile)
+        XCTAssertFalse(file.isHidden)
+
+        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+        let renamed = try! file.rename(as: "Test2")
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+        XCTAssertFalse(file.exists)
+
+        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+        XCTAssertTrue(renamed.exists)
+        try! renamed.delete()
+
+        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+    }
 
 }

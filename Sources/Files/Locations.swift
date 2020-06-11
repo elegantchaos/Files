@@ -5,57 +5,6 @@
 
 import Foundation
 
-public protocol NuItem where Manager: LocationsManager {
-    associatedtype Manager
-    
-    var ref: Manager.ReferenceType { get }
-    init(ref: Manager.ReferenceType)
-    var url: URL { get }
-    var path: String { get }
-    var isFile: Bool { get }
-    var isHidden: Bool { get }
-    var exists: Bool { get }
-}
-
-public extension NuItem {
-    var url: URL { ref.url }
-    var path: String { ref.url.path }
-
-    var isHidden: Bool {
-        let values = try? ref.url.resourceValues(forKeys: [.isHiddenKey])
-        return values?.isHidden ?? false
-    }
-    
-    
-    var name: ItemName {
-        let ext = ref.url.pathExtension
-        return ItemName(ref.url.deletingPathExtension().lastPathComponent, pathExtension: ext.isEmpty ? nil : ext)
-    }
-    
-    var exists: Bool {
-        return ref.manager.manager.fileExists(atURL: ref.url)
-    }
-    
-    func sameType(with url: URL) -> Self {
-        return Self(ref: ref.manager.ref(for: url))
-    }
-}
-
-public protocol NuItemContainer: NuItem {
-    typealias FileType = Manager.FileType
-    typealias FolderType = Manager.FolderType
-//    var up: FolderType { get }
-//    func file(_ name: ItemName) -> FileType
-//    func folder(_ name: ItemName) -> FolderType
-//    func item(_ name: ItemName) -> NuItem?
-//    func item(_ name: String) -> ItemType?
-//    func file(_ name: String) -> FileType
-//    func folder(_ name: String) -> FolderType
-//    func folder(for url: URL) -> FolderType
-//    func file(for url: URL) -> FileType
-//    func forEach(inParallelWith parallel: Self?, order: Order, filter: Filter, recursive: Bool, do block: (ItemType, Self?) -> Void) throws
-}
-
 public protocol LocationsManager where FileType: NuItem, FolderType: NuItemContainer, ReferenceType: LocationRef, ReferenceType.Manager == Self, FileType.Manager == Self, FolderType.Manager == Self {
     var manager: FileManager { get }
     associatedtype FileType
@@ -112,19 +61,55 @@ struct ThrowingLocations: LocationsManager {
 
 protocol ThrowingNuItem: NuItem {
     func delete() throws
+    @discardableResult func copy(to: Manager.FolderType, as: ItemName?, replacing: Bool) throws -> Self
+    @discardableResult func rename(as: ItemName, replacing: Bool) throws -> Self
 }
 
 extension ThrowingNuItem {
     func delete() throws {
         try ref.manager.manager.removeItem(at: ref.url)
     }
+
+    @discardableResult func copy(to folder: Manager.FolderType, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+        let source = ref.url
+        var dest = folder.ref.url
+        if let name = newName {
+            dest = dest.appending(name)
+        } else {
+            dest = dest.appendingPathComponent(source.lastPathComponent)
+        }
+
+        if replacing {
+            try? ref.manager.manager.removeItem(at: dest)
+        }
+
+        try ref.manager.manager.copyItem(at: source, to: dest)
+
+        return sameType(with: dest)
+    }
+    
+    @discardableResult func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
+        let source = ref.url
+        let dest = ref.url.deletingLastPathComponent().appending(newName)
+        if replacing {
+            try? ref.manager.manager.removeItem(at: dest)
+        }
+        
+        try ref.manager.manager.moveItem(at: source, to: dest)
+        return sameType(with: dest)
+    }
+
+    @discardableResult func copy(to folder: Manager.FolderType, as newName: String? = nil, replacing: Bool = false) throws -> Self {
+        let name = newName == nil ? nil : ItemName(newName!)
+        return try copy(to: folder, as: name, replacing: replacing)
+    }
+    
+    @discardableResult func rename(as newName: String, replacing: Bool = false) throws -> Self {
+        return try rename(as: ItemName(newName), replacing: replacing)
+    }
+
 }
 
-struct NuFile: ThrowingNuItem {
-    typealias Manager = ThrowingLocations
-    let ref: ThrowingRef
-    var isFile: Bool { true }
-}
 
 protocol ThrowingNuContainer: NuItemContainer, ThrowingNuItem {
     func create() throws
