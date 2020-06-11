@@ -3,15 +3,10 @@
 //  All code (c) 2020 - present day, Elegant Chaos Limited.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import XCTest
-import XCTestExtensions
+import Foundation
 
-@testable import Files
-
-final class NuManagerTests: XCTestCase {
-  
-    
-
-   
-
+struct QuietFile: QuietItem {
+    let ref: QuietRef
+    var isFile: Bool { true }
+    typealias Manager = QuietLocations
 }

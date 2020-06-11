@@ -9,34 +9,36 @@ import XCTestExtensions
 @testable import Files
 
 final class FolderManagerTests: XCTestCase {
-    func testFolder() {
-        let h = FolderManager.shared.home
-        
-        XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
-        XCTAssertTrue(h.exists)
-        XCTAssertFalse(h.isFile)
-        XCTAssertFalse(h.isHidden)
-        
-        let url = temporaryFile()
-        let folder = FolderManager.shared.folder(for: url)
-        try! folder.create()
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url))
-        
-        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-        let renamed = try! folder.rename(as: "Test2")
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-        XCTAssertFalse(folder.exists)
-        
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed.exists)
-        try! renamed.delete()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-        
-    }
+      func testFolder() {
+          let fm = FileManager.default.locations
+          let h = fm.home
+          
+          XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
+          XCTAssertTrue(h.exists)
+          XCTAssertFalse(h.isFile)
+          XCTAssertFalse(h.isHidden)
+          
+          let url = temporaryFile()
+          let folder = fm.folder(for: url)
+          try! folder.create()
+          XCTAssertTrue(FileManager.default.fileExists(atURL: url))
+          
+          let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+          let renamed = try! folder.rename(as: "Test2")
+          XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+          XCTAssertFalse(folder.exists)
+          
+          XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+          XCTAssertTrue(renamed.exists)
+          try! renamed.delete()
+          
+          XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+          
+      }
     
-    func testQuietFolder() {
-        let h = FolderManager.shared.home.quiet
+   func testQuietFolder() {
+      let fm = FileManager.default.quiet
+        let h = fm.home
         
         XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
         XCTAssertTrue(h.exists)
@@ -44,7 +46,7 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertFalse(h.isHidden)
         
         let url = temporaryFile()
-        let folder = FolderManager.shared.folder(for: url).quiet
+        let folder = fm.folder(for: url)
         folder.create()
         XCTAssertTrue(FileManager.default.fileExists(atURL: url))
         
@@ -61,63 +63,67 @@ final class FolderManagerTests: XCTestCase {
         
     }
     
-    func testFile() {
-        let url = temporaryFile(named: "test", extension: "txt")
-        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-        try! "test".write(to: url, atomically: true, encoding: .utf8)
-        let file = FolderManager.shared.file(for: url)
-        XCTAssertTrue(file.exists)
-        XCTAssertTrue(file.isFile)
-        XCTAssertFalse(file.isHidden)
+     func testFile() {
+           let fm = FileManager.default.locations
 
-        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-        let renamed = try! file.rename(as: "Test2")
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-        XCTAssertFalse(file.exists)
-        
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed.exists)
-        try! renamed.delete()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-    }
+           let url = temporaryFile(named: "test", extension: "txt")
+           try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+           try! "test".write(to: url, atomically: true, encoding: .utf8)
+           let file = fm.file(for: url)
+           XCTAssertTrue(file.exists)
+           XCTAssertTrue(file.isFile)
+           XCTAssertFalse(file.isHidden)
 
-    func testQuietFile() {
-        let url = temporaryFile(named: "test", extension: "txt")
-        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-        try! "test".write(to: url, atomically: true, encoding: .utf8)
-        let file = FolderManager.shared.file(for: url).quiet
-        XCTAssertTrue(file.exists)
-        XCTAssertTrue(file.isFile)
-        XCTAssertFalse(file.isHidden)
+           let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+           let renamed = try! file.rename(as: "Test2")
+           XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+           XCTAssertFalse(file.exists)
 
-        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-        let renamed = file.rename(as: "Test2")
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-        XCTAssertFalse(file.exists)
-        
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed.exists)
-        renamed.delete()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-    }
+           XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+           XCTAssertTrue(renamed.exists)
+           try! renamed.delete()
+
+           XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+       }
+
+     func testQuietFile() {
+           let fm = FileManager.default.quiet
+
+           let url = temporaryFile(named: "test", extension: "txt")
+           try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+           try! "test".write(to: url, atomically: true, encoding: .utf8)
+           let file = fm.file(for: url)
+           XCTAssertTrue(file.exists)
+           XCTAssertTrue(file.isFile)
+           XCTAssertFalse(file.isHidden)
+
+           let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
+           let renamed = file.rename(as: "Test2")
+           XCTAssertFalse(FileManager.default.fileExists(atURL: url))
+           XCTAssertFalse(file.exists)
+
+           XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
+           XCTAssertTrue(renamed.exists)
+           renamed.delete()
+
+           XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
+       }
 
     func testHidden() {
         let url = temporaryFile(named: ".test")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         try! "test".write(to: url, atomically: true, encoding: .utf8)
-        let file = FolderManager.shared.file(for: url)
+        let file = FileManager.default.locations.file(for: url)
         XCTAssertTrue(file.isHidden)
     }
     
     func testFailure() {
-        XCTAssertThrowsError(try FolderManager.shared.temporary.file("non-existent").rename(as: "test"))
+        XCTAssertThrowsError(try FileManager.default.locations.temporary.file("non-existent").rename(as: "test"))
     }
     
     func testQuietFailure() {
         var receivedError: NSError? = nil
-        let fm = FolderManager(errorHandler: { error in receivedError = error as NSError })
+        let fm = OldFolderManager(errorHandler: { error in receivedError = error as NSError })
         _ = fm.temporary.quiet.file("non-existent").rename(as: "test")
         XCTAssertEqual(receivedError?.code, 4)
         XCTAssertEqual(receivedError?.domain, "NSCocoaErrorDomain")
@@ -132,32 +138,32 @@ final class FolderManagerTests: XCTestCase {
         try? FileManager.default.createDirectory(at: f3, withIntermediateDirectories: true, attributes: nil)
         return f1
     }
-    
-    func testForEach() {
-        let root = makeTestStructure()
-        let folder = FolderManager.shared.folder(for: root)
-        var names = ["folder2", "folder3"]
-        try! folder.forEach() { item in
-            XCTAssertTrue(item is Folder)
-            let index = names.firstIndex(of: item.name.name)
-            XCTAssertNotNil(index)
-            names.remove(at: index!)
-        }
-        XCTAssertEqual(names.count, 0)
-    }
-
-    func testQuietForEach() {
-        let root = makeTestStructure()
-        let folder = FolderManager.shared.folder(for: root).quiet
-        var names = ["folder2", "folder3"]
-        try! folder.forEach() { item in
-            XCTAssertTrue(item is QuietFolder)
-            let index = names.firstIndex(of: item.name.name)
-            XCTAssertNotNil(index)
-            names.remove(at: index!)
-        }
-        XCTAssertEqual(names.count, 0)
-    }
+//    
+//    func testForEach() {
+//        let root = makeTestStructure()
+//        let folder = FileManager.default.locations.folder(for: root)
+//        var names = ["folder2", "folder3"]
+//        try! folder.forEach() { item in
+//            XCTAssertTrue(item is OldFolder)
+//            let index = names.firstIndex(of: item.name.name)
+//            XCTAssertNotNil(index)
+//            names.remove(at: index!)
+//        }
+//        XCTAssertEqual(names.count, 0)
+//    }
+//
+//    func testQuietForEach() {
+//        let root = makeTestStructure()
+//        let folder = FileManager.default.locations.folder(for: root).quiet
+//        var names = ["folder2", "folder3"]
+//        try! folder.forEach() { item in
+//            XCTAssertTrue(item is OldQuietFolder)
+//            let index = names.firstIndex(of: item.name.name)
+//            XCTAssertNotNil(index)
+//            names.remove(at: index!)
+//        }
+//        XCTAssertEqual(names.count, 0)
+//    }
 
 //    func testTypePropogation() {
 //        let temp = FolderManager.shared.temporary

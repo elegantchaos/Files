@@ -5,43 +5,50 @@
 
 import Foundation
 
-public struct Folder: ThrowingItem {
- 
-    
-    public let ref: FolderManager.Ref
-    public var isFile: Bool { false }
-    
-    public var quiet: QuietFolder { QuietFolder(wrapped: self) }
+struct Folder: ThrowingContainer {
+    typealias Manager = ThrowingManager
+    let ref: ThrowingRef
+    var isFile: Bool { false }
 
     public func create() throws {
         try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
     }
-
-    public func sameType(with url: URL) -> Folder {
-        return ref.manager.folder(for: url)
-    }
-}
-
-extension Folder: ItemContainer {
-    public typealias FileType = File
-    public typealias FolderType = Folder
     
-    public func file(for url: URL) -> File {
-        return ref.manager.file(for: url)
+    @discardableResult func copy(to folder: Folder, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+        let source = ref.url
+        var dest = folder.ref.url
+        if let name = newName {
+            dest = dest.appending(name)
+        } else {
+            dest = dest.appendingPathComponent(source.lastPathComponent)
+        }
+
+        if replacing {
+            try? ref.manager.manager.removeItem(at: dest)
+        }
+
+        try ref.manager.manager.copyItem(at: source, to: dest)
+
+        return sameType(with: dest)
     }
 
-    public func folder(for url: URL) -> Folder {
-        return ref.manager.folder(for: url)
+    @discardableResult func copy(to folder: Folder, as newName: String? = nil, replacing: Bool = false) throws -> Self {
+        let name = newName == nil ? nil : ItemName(newName!)
+        return try copy(to: folder, as: name, replacing: replacing)
     }
-
-    public func item(_ name: ItemName) -> Item? {
-        let url = ref.url.appending(name)
-        var isDirectory: ObjCBool = false
-        guard ref.manager.manager.fileExists(atPath: url.path, isDirectory: &isDirectory) else { return nil }
-        return isDirectory.boolValue ? ref.manager.folder(for: url) : ref.manager.file(for: url)
+    
+    @discardableResult func rename(as newName: String, replacing: Bool = false) throws -> Self {
+        return try rename(as: ItemName(newName), replacing: replacing)
     }
-}
-
-extension Folder: CustomStringConvertible {
-    public var description: String { "📁: \"\(name.fullName)\" (\(ref.url.path))" }
+    
+    @discardableResult func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
+        let source = ref.url
+        let dest = ref.url.deletingLastPathComponent().appending(newName)
+        if replacing {
+            try? ref.manager.manager.removeItem(at: dest)
+        }
+        
+        try ref.manager.manager.moveItem(at: source, to: dest)
+        return sameType(with: dest)
+    }
 }

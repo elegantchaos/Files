@@ -3,15 +3,8 @@
 //  All code (c) 2020 - present day, Elegant Chaos Limited.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import XCTest
-import XCTestExtensions
+import Foundation
 
-@testable import Files
-
-final class NuManagerTests: XCTestCase {
-  
-    
-
-   
-
+protocol QuietContainer: ItemContainer, QuietItem {
+    func create()
 }

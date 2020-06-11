@@ -46,3 +46,13 @@ extension ItemName: ExpressibleByStringLiteral {
 extension ItemName: CustomStringConvertible {
     public var description: String { fullName }
 }
+
+public extension URL {
+    func appending(_ name: ItemName) -> URL {
+        var result = self.appendingPathComponent(name.name)
+        if let ext = name.pathExtension {
+            result = result.appendingPathExtension(ext)
+        }
+        return result
+    }
+}
