@@ -138,44 +138,44 @@ final class FolderManagerTests: XCTestCase {
         try? FileManager.default.createDirectory(at: f3, withIntermediateDirectories: true, attributes: nil)
         return f1
     }
-//
-//    func testForEach() {
-//        let root = makeTestStructure()
-//        let folder = FileManager.default.locations.folder(for: root)
-//        var names = ["folder2", "folder3"]
-//        try! folder.forEach() { item in
-//            XCTAssertTrue(item is OldFolder)
-//            let index = names.firstIndex(of: item.name.name)
-//            XCTAssertNotNil(index)
-//            names.remove(at: index!)
-//        }
-//        XCTAssertEqual(names.count, 0)
-//    }
-//
-//    func testQuietForEach() {
-//        let root = makeTestStructure()
-//        let folder = FileManager.default.locations.folder(for: root).quiet
-//        var names = ["folder2", "folder3"]
-//        try! folder.forEach() { item in
-//            XCTAssertTrue(item is OldQuietFolder)
-//            let index = names.firstIndex(of: item.name.name)
-//            XCTAssertNotNil(index)
-//            names.remove(at: index!)
-//        }
-//        XCTAssertEqual(names.count, 0)
-//    }
 
-//    func testTypePropogation() {
-//        let temp = FolderManager.shared.temporary
-//        XCTAssertTrue(temp is Folder)
-//        XCTAssertTrue(temp.file("test") is File)
-//        XCTAssertTrue(temp.folder("test") is Folder)
-//        XCTAssertTrue(temp.up is Folder)
-//
-//        let quiet = temp.quiet
-//        XCTAssertTrue(quiet is QuietFolder)
-//        XCTAssertTrue(quiet.file("test") is QuietFile)
-//        XCTAssertTrue(quiet.folder("test") is QuietFolder)
-//        XCTAssertTrue(quiet.up is QuietFolder)
-//    }
+    func testForEach() {
+        let root = makeTestStructure()
+        let folder = FileManager.default.locations.folder(for: root)
+        var names = ["folder2", "folder3"]
+        try! folder.forEach() { item in
+            XCTAssertTrue(item is Folder)
+            let index = names.firstIndex(of: item.name.name)
+            XCTAssertNotNil(index)
+            names.remove(at: index!)
+        }
+        XCTAssertEqual(names.count, 0)
+    }
+
+    func testQuietForEach() {
+        let root = makeTestStructure()
+        let folder = FileManager.default.quiet.folder(for: root)
+        var names = ["folder2", "folder3"]
+        try! folder.forEach() { item in
+            XCTAssertTrue(item is QuietFolder)
+            let index = names.firstIndex(of: item.name.name)
+            XCTAssertNotNil(index)
+            names.remove(at: index!)
+        }
+        XCTAssertEqual(names.count, 0)
+    }
+
+    func testTypePropogation() {
+        let temp = FileManager.default.locations.temporary
+        XCTAssertTrue(temp is Folder)
+        XCTAssertTrue(temp.file("test") is File)
+        XCTAssertTrue(temp.folder("test") is Folder)
+        XCTAssertTrue(temp.up is Folder)
+
+        let quiet = FileManager.default.quiet.temporary
+        XCTAssertTrue(quiet is QuietFolder)
+        XCTAssertTrue(quiet.file("test") is QuietFile)
+        XCTAssertTrue(quiet.folder("test") is QuietFolder)
+        XCTAssertTrue(quiet.up is QuietFolder)
+    }
 }

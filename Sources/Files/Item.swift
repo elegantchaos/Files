@@ -6,16 +6,17 @@
 import Foundation
 
 public protocol ItemCommon {
+    var url: URL { get }
     var isFile: Bool { get }
     var isHidden: Bool { get }
+    var name: ItemName { get }
 }
 
 public protocol Item: ItemCommon where Manager: FolderManager {
     associatedtype Manager
-    typealias ItemType = Self
+//    typealias ItemType = Self
     var ref: Manager.ReferenceType { get }
     init(ref: Manager.ReferenceType)
-    var url: URL { get }
     var path: String { get }
     var exists: Bool { get }
 }
@@ -28,7 +29,6 @@ public extension Item {
         let values = try? ref.url.resourceValues(forKeys: [.isHiddenKey])
         return values?.isHidden ?? false
     }
-    
     
     var name: ItemName {
         let ext = ref.url.pathExtension
