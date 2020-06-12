@@ -71,4 +71,4 @@ public extension FolderManager {
 
 public typealias Folder = ThrowingFolder
 public typealias File = ThrowingFile
-public typealias Item = ThrowingCommon
+public typealias FolderItem = ThrowingCommon
