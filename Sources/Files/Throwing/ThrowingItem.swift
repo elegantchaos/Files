@@ -11,6 +11,13 @@ public protocol ThrowingCommon: ItemCommon {
     @discardableResult func copy(to: ThrowingFolder, as: ItemName?, replacing: Bool) throws -> Self
 }
 
+public extension ThrowingCommon {
+    @discardableResult func copy(to folder: ThrowingFolder, as newName: String? = nil, replacing: Bool = false) throws -> Self {
+        let name = newName == nil ? nil : ItemName(newName!)
+        return try copy(to: folder, as: name, replacing: replacing)
+    }
+}
+
 public protocol ThrowingItem: Item, ThrowingCommon {
 }
 
@@ -22,11 +29,6 @@ public extension ThrowingItem {
     @discardableResult func copy(to folder: Manager.FolderType, as newName: ItemName?, replacing: Bool = false) throws -> Self {
         let copiedRef = try ref.copy(to: folder.ref, as: newName)
         return Self(ref: copiedRef)
-    }
-
-    @discardableResult func copy(to folder: Manager.FolderType, as newName: String? = nil, replacing: Bool = false) throws -> Self {
-        let name = newName == nil ? nil : ItemName(newName!)
-        return try copy(to: folder, as: name, replacing: replacing)
     }
 
     @discardableResult func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {

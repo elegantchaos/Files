@@ -15,15 +15,18 @@ extension FolderManagerTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__FolderManagerTests = [
+        ("testCopy", testCopy),
         ("testFailure", testFailure),
         ("testFile", testFile),
         ("testFolder", testFolder),
         ("testForEach", testForEach),
+        ("testForEachWibble", testForEachWibble),
         ("testHidden", testHidden),
-        ("testQuietFailure", testQuietFailure),
-        ("testQuietFile", testQuietFile),
-        ("testQuietFolder", testQuietFolder),
-        ("testQuietForEach", testQuietForEach),
+        ("testNoThrowCopy", testNoThrowCopy),
+        ("testNoThrowFailure", testNoThrowFailure),
+        ("testNoThrowFile", testNoThrowFile),
+        ("testNoThrowFolder", testNoThrowFolder),
+        ("testNoThrowForEach", testNoThrowForEach),
         ("testTypePropogation", testTypePropogation),
     ]
 }
