@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct ThrowingReference: LocationRef {
+public struct ThrowingReference: ItemLocation {
     public typealias Manager = ThrowingManager
 
     public let url: URL

@@ -25,10 +25,15 @@ Miscellaneous FileManager and URL extensions.
 
 A File/Folder abstraction.
 
+The abstraction in similar to [this one by John Sundell](https://github.com/JohnSundell/Files), but makes a few different decisions.
+
+It's not as complete yet as that one - I'm just adding things as I need them.
+
+
 ## FilesKit
 
-Desktop/shell support built on top of the basic Files library.
+This adds desktop/shell support built on top of the basic Files library.
 
-Requires AppKit/UIKit (depending on the platform you build it for).
+It requires AppKit/UIKit (depending on the platform you build it for), which is why it's a separate library.
 
 

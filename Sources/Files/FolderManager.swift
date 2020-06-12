@@ -5,10 +5,28 @@
 
 import Foundation
 
-public typealias Folder = ThrowingFolder
-public typealias File = ThrowingFile
 
-public protocol FolderManager where FileType: Item, FolderType: ItemContainer, ReferenceType: LocationRef, ReferenceType.Manager == Self, FileType.Manager == Self, FolderType.Manager == Self {
+/// Manager of file/folder items.
+///
+/// Objects that implement this protocol can vend file and folder objects for urls.
+///
+/// They also know about certain standard locations, such as the home directory, library directory
+/// and so on.
+///
+/// The object is associated with a system FileManager object, which it uses to perform file handling
+/// operations.
+///
+/// By default we supply two implementations of the protocol: ThrowingManager and NonThrowingManager.
+/// As the names suggest, the difference between them is in how they treat errors.
+///
+/// The throwing manager throws the underlying file system errors.
+/// The non-throwing manager catches them, and calls a user-supplied callback to process them.
+///
+/// You can obtain an instance of one of these implementations by calling `locations` or `nothrow`
+/// on a FileManager instance. Each call returns a new instance, so you should cache them internally
+/// if you just want to use one.
+
+public protocol FolderManager where FileType: Item, FolderType: ItemContainer, ReferenceType: ItemLocation, ReferenceType.Manager == Self, FileType.Manager == Self, FolderType.Manager == Self {
     var manager: FileManager { get }
     associatedtype FileType
     associatedtype FolderType
@@ -18,13 +36,6 @@ public protocol FolderManager where FileType: Item, FolderType: ItemContainer, R
     func folder(for url: URL) -> FolderType
     func file(for url: URL) -> FileType
     func item(for url: URL) -> ItemType
-}
-
-public protocol LocationRef where Manager: FolderManager {
-    associatedtype Manager
-    var url: URL { get }
-    var manager: Manager { get }
-    init(for url: URL, manager: Manager)
 }
 
 public extension FolderManager {
@@ -55,42 +66,9 @@ public extension FolderManager {
     var temporary: FolderType { return folder(for: manager.temporaryDirectory()) }
 }
 
-public extension LocationRef {
-    @discardableResult func copy(to folder: Self, as newName: ItemName?, replacing: Bool) throws -> Self {
-        let source = url
-        var dest = folder.url
-        if let name = newName {
-            dest = dest.appending(name)
-        } else {
-            dest = dest.appendingPathComponent(source.lastPathComponent)
-        }
+/// The throwing variant is expected to be used most of the time.
+/// For the sake of clarity, we define some aliases for it to supply simpler names.
 
-        if replacing {
-            do {
-                try manager.manager.removeItem(at: dest)
-            } catch {
-                print(error)
-            }
-        }
-
-        try manager.manager.copyItem(at: source, to: dest)
-
-        return Self(for: dest, manager: manager)
-    }
-
-    func rename(as newName: ItemName, replacing: Bool) throws -> Self {
-        let dest = url.deletingLastPathComponent().appending(newName)
-        if replacing {
-            try? manager.manager.removeItem(at: dest)
-        }
-
-        try manager.manager.moveItem(at: url, to: dest)
-        return Self(for: dest, manager: manager)
-    }
-
-    func createFolder() throws {
-        if !manager.manager.fileExists(atURL: url) {
-            try manager.manager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-        }
-    }
-}
+public typealias Folder = ThrowingFolder
+public typealias File = ThrowingFile
+public typealias Item = ThrowingCommon
