@@ -5,16 +5,16 @@
 
 import Foundation
 
-protocol NonThrowingCommon: ItemCommon {
+public protocol NonThrowingCommon: ItemCommon {
     func delete()
     func rename(as newName: ItemName, replacing: Bool) -> Self?
     @discardableResult func copy(to folder: NonThrowingFolder, as newName: ItemName?, replacing: Bool) -> Self?
 }
 
-protocol NonThrowingItem: Item, NonThrowingCommon {
+public protocol NonThrowingItem: Item, NonThrowingCommon {
 }
 
-extension NonThrowingItem where Manager == NonThrowingManager {
+public extension NonThrowingItem where Manager == NonThrowingManager {
     func rename(as newName: ItemName, replacing: Bool = false) -> Self? {
         let renamed = ref.manager.attemptReturning {
             return try ref.rename(as: newName, replacing: replacing)

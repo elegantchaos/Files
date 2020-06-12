@@ -15,6 +15,6 @@ public struct ThrowingFolder: ItemContainer, ThrowingItem {
     }
     
     public func create() throws {
-        try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
+        try ref.createFolder()
     }
 }

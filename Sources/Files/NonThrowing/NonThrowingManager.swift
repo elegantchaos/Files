@@ -5,32 +5,32 @@
 
 import Foundation
 
-struct NonThrowingReference: LocationRef {
-    typealias Manager = NonThrowingManager
+public struct NonThrowingReference: LocationRef {
+    public typealias Manager = NonThrowingManager
 
-    let url: URL
-    let manager: NonThrowingManager
+    public let url: URL
+    public let manager: NonThrowingManager
     
-    init(for url: URL, manager: Manager) {
+    public init(for url: URL, manager: Manager) {
         self.url = url
         self.manager = manager
     }
 }
 
-struct NonThrowingManager: FolderManager {
-    typealias FileType = NonThrowingFile
-    typealias FolderType = NonThrowingFolder
-    typealias ReferenceType = NonThrowingReference
-    typealias ItemType = NonThrowingCommon
+public struct NonThrowingManager: FolderManager {
+    public typealias FileType = NonThrowingFile
+    public typealias FolderType = NonThrowingFolder
+    public typealias ReferenceType = NonThrowingReference
+    public typealias ItemType = NonThrowingCommon
     
     public typealias LogHandler = (String) -> Void
     public typealias ErrorHandler = (Error) -> Void
     
-    let manager: FileManager
+    public let manager: FileManager
     let logHandler: LogHandler
     let errorHandler: ErrorHandler
 
-    init(manager: FileManager = FileManager.default, logHandler: LogHandler? = nil, errorHandler: ErrorHandler? = nil) {
+    public init(manager: FileManager = FileManager.default, logHandler: LogHandler? = nil, errorHandler: ErrorHandler? = nil) {
         self.manager = manager
         self.logHandler = logHandler ?? { print($0) }
         self.errorHandler = errorHandler ?? { print($0) }
@@ -63,6 +63,6 @@ struct NonThrowingManager: FolderManager {
 }
 
 
-extension FileManager {
-    var quiet: NonThrowingManager { NonThrowingManager(manager: self) }
+public extension FileManager {
+    var nothrow: NonThrowingManager { NonThrowingManager(manager: self) }
 }

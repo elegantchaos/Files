@@ -5,6 +5,9 @@
 
 import Foundation
 
+public typealias Folder = ThrowingFolder
+public typealias File = ThrowingFile
+
 public protocol FolderManager where FileType: Item, FolderType: ItemContainer, ReferenceType: LocationRef, ReferenceType.Manager == Self, FileType.Manager == Self, FolderType.Manager == Self {
     var manager: FileManager { get }
     associatedtype FileType
@@ -81,4 +84,9 @@ public extension LocationRef {
         return Self(for: dest, manager: manager)
     }
 
+    func createFolder() throws {
+        if !manager.manager.fileExists(atURL: url) {
+            try manager.manager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+        }
+    }
 }

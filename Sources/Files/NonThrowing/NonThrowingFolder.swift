@@ -5,14 +5,18 @@
 
 import Foundation
 
-struct NonThrowingFolder: ItemContainer, NonThrowingItem {
-    let ref: NonThrowingReference
-    var isFile: Bool { false }
-    typealias Manager = NonThrowingManager
+public struct NonThrowingFolder: ItemContainer, NonThrowingItem {
+    public let ref: NonThrowingReference
+    public var isFile: Bool { false }
+    public typealias Manager = NonThrowingManager
 
     func create() {
         ref.manager.attempt {
-            try ref.manager.manager.createDirectory(at: ref.url, withIntermediateDirectories: true, attributes: nil)
+            try ref.createFolder()
         }
+    }
+    
+    public init(ref: NonThrowingReference) {
+        self.ref = ref
     }
 }

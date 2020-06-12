@@ -5,8 +5,12 @@
 
 import Foundation
 
-struct NonThrowingFile: NonThrowingItem {
-    let ref: NonThrowingReference
-    var isFile: Bool { true }
-    typealias Manager = NonThrowingManager
+public struct NonThrowingFile: NonThrowingItem {
+    public let ref: NonThrowingReference
+    public var isFile: Bool { true }
+    public typealias Manager = NonThrowingManager
+    
+    public init(ref: NonThrowingReference) {
+        self.ref = ref
+    }
 }
