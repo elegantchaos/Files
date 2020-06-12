@@ -31,8 +31,16 @@ public extension Item {
     var path: String { ref.url.path }
 
     var isHidden: Bool {
+        return isHiddenName || isHiddenAttribute
+    }
+    
+    var isHiddenAttribute: Bool {
         let values = try? ref.url.resourceValues(forKeys: [.isHiddenKey])
-        return values?.isHidden ?? false
+        return values?.isHidden ?? false // on Linux, this always returns false
+    }
+    
+    var isHiddenName: Bool {
+        return ref.url.lastPathComponent.first == "."
     }
     
     var name: ItemName {

@@ -223,16 +223,30 @@ final class FolderManagerTests: XCTestCase {
     }
     
     func testTypePropogation() {
+        let root = makeTestStructure()
+        
         let temp = FileManager.default.locations.temporary
-        XCTAssertTrue(temp is ThrowingFolder)
-        XCTAssertTrue(temp.file("test") is ThrowingFile)
-        XCTAssertTrue(temp.folder("test") is ThrowingFolder)
-        XCTAssertTrue(temp.up is ThrowingFolder)
+        XCTAssert(temp, isType: ThrowingFolder.self)
+        XCTAssert(temp.file("test"), isType: ThrowingFile.self)
+        XCTAssert(temp.folder("test"), isType: ThrowingFolder.self)
+        XCTAssert(temp.up, isType: ThrowingFolder.self)
+        try! FileManager.default.locations.folder(for: root).forEach() { item in
+            XCTAssert(item, isType: ThrowingFolder.self)
+        }
         
         let quiet = FileManager.default.quiet.temporary
-        XCTAssertTrue(quiet is NonThrowingFolder)
-        XCTAssertTrue(quiet.file("test") is NonThrowingFile)
-        XCTAssertTrue(quiet.folder("test") is NonThrowingFolder)
-        XCTAssertTrue(quiet.up is NonThrowingFolder)
+        XCTAssert(quiet, isType: NonThrowingFolder.self)
+        XCTAssert(quiet.file("test"), isType: NonThrowingFile.self)
+        XCTAssert(quiet.folder("test"), isType: NonThrowingFolder.self)
+        XCTAssert(quiet.up, isType: NonThrowingFolder.self)
+        try! FileManager.default.quiet.folder(for: root).forEach() { item in
+            XCTAssert(item, isType: NonThrowingFolder.self)
+        }
     }
+}
+
+// TODO: move to XCTestExtensions
+func XCTAssert(_ item: Any, isType matching: Any.Type, file: StaticString = #file, line: UInt = #line) {
+    XCTAssertTrue(type(of: item) == matching, file: file, line: line)
+
 }
