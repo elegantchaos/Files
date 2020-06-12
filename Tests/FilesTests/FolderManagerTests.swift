@@ -53,8 +53,8 @@ final class FolderManagerTests: XCTestCase {
         
     }
     
-    func testQuietFolder() {
-        let fm = FileManager.default.quiet
+    func testNoThrowFolder() {
+        let fm = FileManager.default.nothrow
         let h = fm.home
         
         XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
@@ -104,8 +104,8 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
     }
     
-    func testQuietFile() {
-        let fm = FileManager.default.quiet
+    func testNoThrowFile() {
+        let fm = FileManager.default.nothrow
         
         let url = temporaryFile(named: "test", extension: "txt")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
@@ -149,9 +149,9 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertTrue(copied.url.deletingLastPathComponent() == temp.url.deletingLastPathComponent())
     }
 
-    func testQuietCopy() {
+    func testNoThrowCopy() {
         let url = makeTestFile()
-        let temp = FileManager.default.quiet.file(for: url)
+        let temp = FileManager.default.nothrow.file(for: url)
         let container = temp.up
         XCTAssertTrue(temp.exists)
         XCTAssertTrue(temp.isFile)
@@ -167,7 +167,7 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertThrowsError(try FileManager.default.locations.temporary.file("non-existent").rename(as: "test"))
     }
     
-    func testQuietFailure() {
+    func testNoThrowFailure() {
         var receivedError: NSError? = nil
         let fm = NonThrowingManager(errorHandler: { error in receivedError = error as NSError })
         _ = fm.temporary.file("non-existent").rename(as: "test")
@@ -206,9 +206,9 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertEqual(names.count, 0)
     }
 
-    func testQuietForEach() {
+    func testNoThrowForEach() {
         let root = makeTestStructure()
-        let folder = FileManager.default.quiet.folder(for: root)
+        let folder = FileManager.default.nothrow.folder(for: root)
         var names = ["folder2", "folder3"]
         try! folder.forEach() { item in
             XCTAssertTrue(item is NonThrowingFolder)
@@ -234,12 +234,12 @@ final class FolderManagerTests: XCTestCase {
             XCTAssert(item, isType: ThrowingFolder.self)
         }
         
-        let quiet = FileManager.default.quiet.temporary
-        XCTAssert(quiet, isType: NonThrowingFolder.self)
-        XCTAssert(quiet.file("test"), isType: NonThrowingFile.self)
-        XCTAssert(quiet.folder("test"), isType: NonThrowingFolder.self)
-        XCTAssert(quiet.up, isType: NonThrowingFolder.self)
-        try! FileManager.default.quiet.folder(for: root).forEach() { item in
+        let nothrow = FileManager.default.nothrow.temporary
+        XCTAssert(nothrow, isType: NonThrowingFolder.self)
+        XCTAssert(nothrow.file("test"), isType: NonThrowingFile.self)
+        XCTAssert(nothrow.folder("test"), isType: NonThrowingFolder.self)
+        XCTAssert(nothrow.up, isType: NonThrowingFolder.self)
+        try! FileManager.default.nothrow.folder(for: root).forEach() { item in
             XCTAssert(item, isType: NonThrowingFolder.self)
         }
     }
