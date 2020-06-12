@@ -23,11 +23,7 @@ public extension ItemLocation {
         }
 
         if replacing {
-            do {
-                try manager.manager.removeItem(at: dest)
-            } catch {
-                print(error)
-            }
+            try? manager.manager.removeItem(at: dest)
         }
 
         try manager.manager.copyItem(at: source, to: dest)
