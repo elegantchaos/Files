@@ -31,7 +31,7 @@ public extension NonThrowingItem where Manager == NonThrowingManager {
 
     @discardableResult func copy(to folder: NonThrowingFolder, as newName: ItemName?, replacing: Bool = false) -> Self? {
         let copied = ref.manager.attemptReturning() {
-            return try ref.copy(to: folder.ref, as: newName)
+            return try ref.copy(to: folder.ref, as: newName, replacing: replacing)
         }
         return Self(ref: copied)
     }

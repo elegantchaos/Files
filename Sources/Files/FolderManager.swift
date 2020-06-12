@@ -56,7 +56,7 @@ public extension FolderManager {
 }
 
 public extension LocationRef {
-    @discardableResult func copy(to folder: Self, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+    @discardableResult func copy(to folder: Self, as newName: ItemName?, replacing: Bool) throws -> Self {
         let source = url
         var dest = folder.url
         if let name = newName {
@@ -66,7 +66,11 @@ public extension LocationRef {
         }
 
         if replacing {
-            try? manager.manager.removeItem(at: dest)
+            do {
+                try manager.manager.removeItem(at: dest)
+            } catch {
+                print(error)
+            }
         }
 
         try manager.manager.copyItem(at: source, to: dest)
@@ -74,7 +78,7 @@ public extension LocationRef {
         return Self(for: dest, manager: manager)
     }
 
-    func rename(as newName: ItemName, replacing: Bool = false) throws -> Self {
+    func rename(as newName: ItemName, replacing: Bool) throws -> Self {
         let dest = url.deletingLastPathComponent().appending(newName)
         if replacing {
             try? manager.manager.removeItem(at: dest)
