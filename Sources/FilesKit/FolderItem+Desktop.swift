@@ -13,6 +13,10 @@ extension Item {
     public func reveal() {
         NSWorkspace.shared.open(url)
     }
+    
+    public var icon: NSImage {
+        NSWorkspace.shared.icon(forFile: url.path)
+    }
 }
 
 #else
