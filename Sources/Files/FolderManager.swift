@@ -62,6 +62,7 @@ public extension FolderManager {
     
     var desktop: FolderType { return folder(for: manager.desktopDirectory()) }
     var current: FolderType { return folder(for: manager.workingDirectory()) }
+    var documents: FolderType { return folder(for: manager.documentsDirectory()) }
     var home: FolderType { return folder(for: manager.homeDirectory()) }
     var temporary: FolderType { return folder(for: manager.temporaryDirectory()) }
 }
