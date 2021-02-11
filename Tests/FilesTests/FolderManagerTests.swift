@@ -26,8 +26,25 @@ final class FolderManagerTests: XCTestCase {
         return url
     }
     
+    /// Test that calling default on ThrowingManager returns the same manager as calling locations on the default system FileManager
+    func testDefaultManager() {
+        XCTAssertEqual(FileManager.default.locations, ThrowingManager.default)
+    }
+    
+    /// Test that calling file() on the default manager is the same as doing it long-hand
+    func testDefaultFile() {
+        let url = URL(fileURLWithPath: "test")
+        XCTAssertEqual(FileManager.default.locations.file(for: url), ThrowingManager.file(for: url))
+    }
+
+    /// Test that calling folder() on the default manager is the same as doing it long-hand
+    func testDefaultFolder() {
+        let url = URL(fileURLWithPath: "test")
+        XCTAssertEqual(FileManager.default.locations.folder(for: url), ThrowingManager.folder(for: url))
+    }
+
     func testFolder() {
-        let fm = FileManager.default.locations
+        let fm = ThrowingManager.default
         let h = fm.home
         
         XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
@@ -53,36 +70,9 @@ final class FolderManagerTests: XCTestCase {
         
     }
     
-    func testNoThrowFolder() {
-        let fm = FileManager.default.nothrow
-        let h = fm.home
-        
-        XCTAssertEqual(h.url, URL(fileURLExpandingPath: "~/"))
-        XCTAssertTrue(h.exists)
-        XCTAssertFalse(h.isFile)
-        XCTAssertFalse(h.isHidden)
-        
-        let url = temporaryFile()
-        let folder = fm.folder(for: url)
-        folder.create()
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url))
-        
-        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-        let renamed = folder.rename(as: "Test2")
-        XCTAssertNotNil(renamed)
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-        XCTAssertFalse(folder.exists)
-        
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed!.exists)
-        renamed!.delete()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-        
-    }
     
     func testFile() {
-        let fm = FileManager.default.locations
+        let fm = ThrowingManager.default
         
         let url = temporaryFile(named: "test", extension: "txt")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
@@ -104,41 +94,18 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
     }
     
-    func testNoThrowFile() {
-        let fm = FileManager.default.nothrow
-        
-        let url = temporaryFile(named: "test", extension: "txt")
-        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-        try! "test".write(to: url, atomically: true, encoding: .utf8)
-        let file = fm.file(for: url)
-        XCTAssertTrue(file.exists)
-        XCTAssertTrue(file.isFile)
-        XCTAssertFalse(file.isHidden)
-        
-        let url2 = url.deletingLastPathComponent().appendingPathComponent("Test2")
-        let renamed = file.rename(as: "Test2")
-        XCTAssertNotNil(renamed)
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url))
-        XCTAssertFalse(file.exists)
-        
-        XCTAssertTrue(FileManager.default.fileExists(atURL: url2))
-        XCTAssertTrue(renamed!.exists)
-        renamed!.delete()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atURL: url2))
-    }
     
     func testHidden() {
         let url = temporaryFile(named: ".test")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         try! "test".write(to: url, atomically: true, encoding: .utf8)
-        let file = FileManager.default.locations.file(for: url)
+        let file = ThrowingManager.file(for: url)
         XCTAssertTrue(file.isHidden)
     }
     
     func testCopy() {
         let url = makeTestFile()
-        let temp = FileManager.default.locations.file(for: url)
+        let temp = ThrowingManager.file(for: url)
         let container = temp.up
         XCTAssertTrue(temp.exists)
         XCTAssertTrue(temp.isFile)
@@ -149,22 +116,8 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertTrue(copied.url.deletingLastPathComponent() == temp.url.deletingLastPathComponent())
     }
 
-    func testNoThrowCopy() {
-        let url = makeTestFile()
-        let temp = FileManager.default.nothrow.file(for: url)
-        let container = temp.up
-        XCTAssertTrue(temp.exists)
-        XCTAssertTrue(temp.isFile)
-        XCTAssertTrue(container.exists)
-        let copied = temp.copy(to: container, as: "another")
-        XCTAssertNotNil(copied)
-        XCTAssertTrue(copied!.exists)
-        XCTAssertTrue(copied!.url != temp.url)
-        XCTAssertTrue(copied!.url.deletingLastPathComponent() == temp.url.deletingLastPathComponent())
-    }
-
     func testFailure() {
-        XCTAssertThrowsError(try FileManager.default.locations.temporary.file("non-existent").rename(as: "test"))
+        XCTAssertThrowsError(try ThrowingManager.default.temporary.file("non-existent").rename(as: "test"))
     }
     
     func testNoThrowFailure() {
@@ -178,7 +131,7 @@ final class FolderManagerTests: XCTestCase {
     
     func testForEach() {
         let root = makeTestStructure()
-        let folder = FileManager.default.locations.folder(for: root)
+        let folder = ThrowingManager.folder(for: root)
         var names = ["folder2", "folder3"]
         try! folder.forEach() { item in
             XCTAssertTrue(item is ThrowingFolder)
@@ -193,7 +146,7 @@ final class FolderManagerTests: XCTestCase {
 
     func testForEachWibble() {
         let root = makeTestStructure()
-        let folder = FileManager.default.locations.folder(for: root)
+        let folder = ThrowingManager.folder(for: root)
         var names = ["folder2", "folder3"]
         try! folder.forEach(inParallelWith: nil) { item, folder in
             XCTAssertTrue(item is ThrowingFolder)
@@ -206,31 +159,16 @@ final class FolderManagerTests: XCTestCase {
         XCTAssertEqual(names.count, 0)
     }
 
-    func testNoThrowForEach() {
-        let root = makeTestStructure()
-        let folder = FileManager.default.nothrow.folder(for: root)
-        var names = ["folder2", "folder3"]
-        try! folder.forEach() { item in
-            XCTAssertTrue(item is NonThrowingFolder)
-            let index = names.firstIndex(of: item.name.name)
-            XCTAssertNotNil(index)
-            names.remove(at: index!)
-            let renamed = item.rename(as: "blah", replacing: false)
-            XCTAssertNotNil(renamed)
-            renamed!.delete()
-        }
-        XCTAssertEqual(names.count, 0)
-    }
     
     func testTypePropogation() {
         let root = makeTestStructure()
         
-        let temp = FileManager.default.locations.temporary
+        let temp = ThrowingManager.default.temporary
         XCTAssert(temp, isType: ThrowingFolder.self)
         XCTAssert(temp.file("test"), isType: ThrowingFile.self)
         XCTAssert(temp.folder("test"), isType: ThrowingFolder.self)
         XCTAssert(temp.up, isType: ThrowingFolder.self)
-        try! FileManager.default.locations.folder(for: root).forEach() { item in
+        try! ThrowingManager.folder(for: root).forEach() { item in
             XCTAssert(item, isType: ThrowingFolder.self)
         }
         
@@ -243,10 +181,4 @@ final class FolderManagerTests: XCTestCase {
             XCTAssert(item, isType: NonThrowingFolder.self)
         }
     }
-}
-
-// TODO: move to XCTestExtensions
-func XCTAssert(_ item: Any, isType matching: Any.Type, file: StaticString = #file, line: UInt = #line) {
-    XCTAssertTrue(type(of: item) == matching, file: file, line: line)
-
 }

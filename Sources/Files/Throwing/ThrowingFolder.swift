@@ -24,3 +24,6 @@ public struct ThrowingFolder: ItemContainer, ThrowingItem {
         }
     }
 }
+
+extension ThrowingFolder: Equatable {
+}

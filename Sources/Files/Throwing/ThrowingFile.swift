@@ -21,3 +21,6 @@ public struct ThrowingFile: ThrowingItem {
     public func write(asText text: String) { try? text.write(to: ref.url, atomically: true, encoding: .utf8) }
     public func write(asData data: Data) { try? data.write(to: ref.url) }
 }
+
+extension ThrowingFile: Equatable {
+}
