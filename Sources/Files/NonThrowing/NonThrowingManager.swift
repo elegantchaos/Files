@@ -60,6 +60,14 @@ public struct NonThrowingManager: FolderManager {
             return nil
         }
     }
+    
+    public func asNonThrowing(_ file: ThrowingFile) -> NonThrowingFile {
+        return NonThrowingFile(ref: NonThrowingReference(for: file.url, manager: self))
+    }
+    
+    public func asNonThrowing(_ folder: ThrowingFolder) -> NonThrowingFolder {
+        return NonThrowingFolder(ref: NonThrowingReference(for: folder.url, manager: self))
+    }
 }
 
 

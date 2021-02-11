@@ -17,4 +17,10 @@ public struct ThrowingFolder: ItemContainer, ThrowingItem {
     public func create() throws {
         try ref.createFolder()
     }
+    
+    public func merge(into destination: ThrowingFolder, replacing: Bool = true) throws {
+        try self.forEach { file in
+            try file.copy(to: destination, replacing: replacing)
+        }
+    }
 }

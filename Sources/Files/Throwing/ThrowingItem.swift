@@ -26,7 +26,7 @@ public extension ThrowingItem {
         try ref.manager.manager.removeItem(at: ref.url)
     }
 
-    @discardableResult func copy(to folder: Manager.FolderType, as newName: ItemName?, replacing: Bool = false) throws -> Self {
+    @discardableResult func copy(to folder: Manager.FolderType, as newName: ItemName? = nil, replacing: Bool = false) throws -> Self {
         let copiedRef = try ref.copy(to: folder.ref, as: newName, replacing: replacing)
         return Self(ref: copiedRef)
     }
