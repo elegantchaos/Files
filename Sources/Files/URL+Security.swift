@@ -8,11 +8,13 @@ import Foundation
 #if os(iOS) || os(macOS) || os(tvOS)
 
 public extension URL.BookmarkCreationOptions {
-    #if os(iOS) || os(tvOS)
-    static var defaultSecureBookmarkOptions: Self = Self()
-    #elseif os(macOS)
-    static var defaultSecureBookmarkOptions: Self = .withSecurityScope
-    #endif
+    static var defaultSecureBookmarkOptions: URL.BookmarkCreationOptions {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+            return .withSecurityScope
+        #else
+            return Self()
+        #endif
+    }
 }
 
 public extension URL {
@@ -52,19 +54,6 @@ public extension URL {
         }
         
         return resolved
-    }
-}
-
-#else
-
-public extension URL {
-    func accessSecurityScopedResource(withPathComponents components: [String], block: (URL) -> Void) {
-        let targetURL = appendingPathComponents(components)
-        block(targetURL)
-    }
-    
-    func secureBookmark(options:  URL.BookmarkCreationOptions = .defaultSecureBookmarkOptions) -> Data? {
-        return nil
     }
 }
 
