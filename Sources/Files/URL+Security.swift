@@ -5,6 +5,7 @@
 
 import Foundation
 
+#if !os(Linux)
 #if os(iOS) || os(macOS) || os(tvOS)
 
 public extension URL.BookmarkCreationOptions {
@@ -57,4 +58,5 @@ public extension URL {
     }
 }
 
+#endif
 #endif
