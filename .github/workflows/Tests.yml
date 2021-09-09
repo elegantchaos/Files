@@ -76,48 +76,6 @@ jobs:
             path: logs
 
 
-    linux-swift-51:
-        name: Linux (Swift 5.1)
-        runs-on: ubuntu-18.04
-        container: swift:5.1
-        steps:
-        - name: Checkout
-          uses: actions/checkout@v1
-        - name: Make Logs Directory
-          run: mkdir logs
-        - name: Swift Version
-          run: swift --version
-        - name: Test (Release)
-          run: swift test --configuration release -Xswiftc -enable-testing 
-        - name: Upload Logs
-          uses: actions/upload-artifact@v1
-          if: always()
-          with:
-            name: logs
-            path: logs
-
-
-    linux-swift-nightly:
-        name: Linux (Swift Development Nightly)
-        runs-on: ubuntu-18.04
-        container: swiftlang/swift:nightly
-        steps:
-        - name: Checkout
-          uses: actions/checkout@v1
-        - name: Make Logs Directory
-          run: mkdir logs
-        - name: Swift Version
-          run: swift --version
-        - name: Test (Release)
-          run: swift test --configuration release -Xswiftc -enable-testing 
-        - name: Upload Logs
-          uses: actions/upload-artifact@v1
-          if: always()
-          with:
-            name: logs
-            path: logs
-
-
     xcode-swift-51:
         name: iOS/tvOS/watchOS (Swift 5.1, Xcode 11.3.1)
         runs-on: macos-latest
