@@ -1,11 +1,11 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 
 import PackageDescription
 
 let package = Package(
     name: "Files",
     platforms: [
-        .macOS(.v10_13)
+        .macOS(.v10_13), .iOS(.v10), .tvOS(.v10), .watchOS(.v6)
     ],
     products: [
         .library(
@@ -16,7 +16,7 @@ let package = Package(
         targets: ["FilesKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/elegantchaos/XCTestExtensions.git", from: "1.3.0")
+        .package(url: "https://github.com/elegantchaos/XCTestExtensions.git", from: "1.4.2")
     ],
     targets: [
         .target(
